@@ -1,0 +1,8 @@
+i, j, k: integer;
+
+body
+  write("Inserisci tre numeri: ");
+  read(i, j, k);
+  writeln(i, " - ", j, " + ", k, " = ", i-j+k);
+end.
+	

@@ -1,0 +1,46 @@
+i,j,k : integer;
+p: boolean;
+d: real;
+
+func prova(x : integer, c : boolean, s: string): integer
+
+o:integer;
+a: real;
+
+body
+    if (2 > 3) and true or false then
+        write ("ciao");
+        a = 4.8;
+    end;
+
+    i = 0;
+    while i < 2 do
+        write ("ciao");
+        for j = 0 to 2 do
+            if j > 1 then
+                read (k);
+                p = 2 > 3;
+            end;    
+        end;
+        i = i + 1;    
+    end;    
+    return 22;
+
+end;
+
+
+func prova2(x : real): real
+o:real;
+t: integer;
+body
+    o = real(5);
+    t = 5;
+    write(o + real(3));
+    k = prova(t, false, "fff");
+    return real(45);
+end;
+
+
+body
+    i = prova(3,false,"laura");
+end.

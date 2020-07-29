@@ -1,0 +1,25 @@
+i, count : integer;
+
+func fibonacci(n : integer) : integer
+body
+	count = count + 1;
+	if (n <= 0) then
+	      	return 0;
+	end;
+
+	if (n == 1) then
+	      	return 1;
+	else
+		return fibonacci(n - 1) + fibonacci(n - 2);
+	end;
+end;
+
+body
+	write("Inserisci un numero: ");
+	read(i);
+
+	count = 0;
+	writeln("Fibonacci(", i, ") = ", fibonacci(i));
+	writeln("Chiamate effettuate: ", count);
+end.
+	

@@ -1,0 +1,45 @@
+k: integer;
+i,j : real;
+s: string;
+b: boolean;
+
+func somma(x: integer, y: integer) : integer
+body
+  return x + y;
+end;
+
+func diviso(a: real, b: real): real
+body
+  if a > b then
+    return a / b;
+  else
+    if a < b then
+      return b / a;
+    else
+      return 1.0;    
+    end;
+  end;
+end;
+
+func chiamata(t1: real, t2: real): void
+z,y: integer;
+body
+  z = integer(t1);
+  y = integer(t2);
+  writeln(somma(z,y),"somma:");
+  writeln(diviso(t1, t2),"diviso");
+end;
+
+body
+  for k = 0 to 3 do
+    write("Inserisci 1 o 0: ");
+    read(b);
+
+    if b == true then
+      read(i,j);
+      chiamata(i,j);
+    else
+      writeln("hai selezionato 0");
+    end;    
+  end;
+end.    

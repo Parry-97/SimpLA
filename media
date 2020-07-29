@@ -1,0 +1,16 @@
+  a, b: integer;
+
+func media(n: integer, m: integer): real
+  somma: integer;
+body
+  somma = n + m;
+  return real(somma) / 2.0;
+end;
+
+
+body
+  write("Inserisci i due numeri di cui calcolare la media: ");
+  read(a, b);
+  writeln("La media di ", a, " e ", b, " è ", media(a, b));
+end.
+	

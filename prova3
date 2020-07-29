@@ -1,0 +1,51 @@
+i, k, y, j:integer;
+s: string;
+func prova(z: integer):integer
+body
+    return z + 1;
+end;
+
+
+func prova3(): string
+z: integer;
+body
+    read(z);
+    z = prova(z);
+    writeln(z);
+    if z < 5 then
+        return "minore di 5";
+        write("ciao");
+    else
+        if z > 10 then
+            return "maggiore di 10";
+        else
+            return "compreso tra 5 e 10";
+        end;
+    end;
+    return "niente";
+end;
+
+func prova2(k: integer): integer
+t: integer;
+body
+    if k < 10 then
+        prova2(k + 1);
+    else
+        return k;
+    end;        
+end;
+
+body
+    for i = 0 to 3 do
+        for j = 0 to 2 do
+            if j > 1 then
+                read(k);
+                writeln(k, i , j);
+                break;
+            end;
+        end;
+    end;
+    write(prova3());        
+end.    
+
+
