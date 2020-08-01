@@ -1,0 +1,30 @@
+i, j, k: integer;
+
+func resto(x: real): real
+temp: integer;
+body
+    temp = integer(x);
+    x = x - real(temp);
+    return x;
+end;
+
+func isprime(num: integer) : boolean
+divisione: real;
+body
+    for i = 2 to (num - 1) do
+        divisione = real(num) / real(i);  
+        if resto(divisione) == 0.0 then
+            writeln(num, "non è primo perche ha ",i ," come divisore");
+            return false;
+        end;    
+    end;
+    return true;
+end;
+
+body
+    for j = 0 to 4 do
+        write("Inserire numero di cui sapere se primo: ");
+        read(k);
+        writeln("il numero ", k ," è primo?: ", if isprime(k) then "true" else "false" end);
+    end;    
+end.

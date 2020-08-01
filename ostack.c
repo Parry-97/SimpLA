@@ -47,7 +47,7 @@ int isOEmpty(struct Ostack *stack)
 struct Ostack_node opeek(struct Ostack *ostack)
 {
     if (isOEmpty(ostack)) {
-        fprintf(stderr, "Empty Object Stack\n");
+        fprintf(stderr, "Empty Object Stack(Invalid OPEEK)\n");
         exit(-1);
     }
     return ostack->stack[ostack->top];
@@ -56,7 +56,7 @@ struct Ostack_node opeek(struct Ostack *ostack)
 struct Ostack_node opop(struct Ostack *ostack)
 {
     if (isOEmpty(ostack)) {
-        fprintf(stderr, "Empty object Stack\n");
+        fprintf(stderr, "Empty object Stack (Invalid OPOP)\n");
         exit(-1);
     }
 

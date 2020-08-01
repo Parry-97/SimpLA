@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "string.h"
-#include "def.h"
 #include <stdbool.h>
+#include "def.h"
 
 struct Astack *aroot;
 struct Ostack *oroot;
+
+FILE *code_file;
 
 struct data_mem *global_mem;
 
@@ -17,16 +19,17 @@ void executeSCode(struct SCode prog)
 
     char *format = (char *)malloc(sizeof(char) * 100);
 
-    char *s1 = (char *)malloc(sizeof(char) * 100);
-    char *s2 = (char *)malloc(sizeof(char) * 100);
+    char *s1 = (char *)malloc(sizeof(char) * 280);
+    char *s2 = (char *)malloc(sizeof(char) * 280);
 
-    char *read_format = (char *)malloc(sizeof(char) * 25);
+    char *read_format = (char *)malloc(sizeof(char) * 140);
 
     struct Stat *code_mem = (struct Stat *)calloc(sizeof(struct Stat), prog.num);
     struct Stat *code_stat = prog.first;
 
     struct data_mem lod_data;
 
+    int call_oid;
     int stat_counter = 0;
 
     while (code_stat != NULL)
@@ -54,19 +57,20 @@ void executeSCode(struct SCode prog)
 
     int env = 0;
     int global_obj_id = 0;
-    int current_obj_id = 0;
+    int local_obj_id = 0;
     bool end_of_program = false;
 
     global_mem = (struct data_mem *)malloc(sizeof(struct data_mem) * SYMTAB_SIZE);
 
     struct data_mem *current_mem;
 
-    aroot = createAStack(200);
-    oroot = createOStack(200);
+    aroot = createAStack(256);
+    oroot = createOStack(256);
 
     struct Stat *scode = prog.first;
 
     current_mem = global_mem;
+
     for (int i = 0; i < prog.num && !end_of_program; i++)
     {
         switch (code_mem[i].op)
@@ -75,9 +79,13 @@ void executeSCode(struct SCode prog)
         case VARI:
             if (!env)
             {
-                global_obj_id++;
+                global_mem[global_obj_id++].size = code_mem[i].args[0].ival;
             }
-            current_mem[current_obj_id++].size = code_mem[i].args[0].ival;
+            else
+            {
+
+                current_mem[local_obj_id++].size = code_mem[i].args[0].ival;
+            }
             break;
 
         case LCI:
@@ -105,13 +113,15 @@ void executeSCode(struct SCode prog)
         case LOD:
             if (code_mem[i].args[0].ival)
             {
-                lod_data = global_mem[global_obj_id + code_mem[i].args[1].ival];
+                //lod_data = global_mem[global_obj_id + code_mem[i].args[1].ival];
+                lod_data = current_mem[code_mem[i].args[1].ival];
             }
             else
             {
                 lod_data = global_mem[code_mem[i].args[1].ival];
             }
-            opush(oroot, lod_data.val, lod_data.size);
+            Value lod_value = lod_data.val;
+            opush(oroot, lod_value, lod_data.size);
             break;
 
         case STO:
@@ -120,7 +130,7 @@ void executeSCode(struct SCode prog)
             if (code_mem[i].args[0].ival)
             {
 
-                global_mem[global_obj_id + code_mem[i].args[1].ival].val = sto_val;
+                current_mem[code_mem[i].args[1].ival].val = sto_val;
             }
             else
             {
@@ -387,21 +397,21 @@ void executeSCode(struct SCode prog)
             break;
 
         case PSH:
-
+            call_oid = global_obj_id;
             v1 = code_mem[i].args[0];
             v2 = code_mem[i].args[1];
 
             struct Ostack *param_stack = createOStack(v1.ival);
-            struct Ostack_node *param = (struct Ostack_node *)malloc(sizeof(struct Ostack_node));
+            struct Ostack_node param;
+            ;
 
             for (int j = 0; j < v1.ival; j++)
             {
-                *param = opop(oroot);
-                opush(param_stack, param->val, param->size);
-
+                param = opop(oroot);
+                opush(param_stack, param.val, param.size);
             }
 
-            apush(aroot, param_stack, v2.ival, i + 1);
+            apush(aroot, param_stack, call_oid, (struct data_mem *)malloc(sizeof(struct data_mem) * 200), v2.ival, i + 1);
             break;
 
         case GOT:
@@ -432,12 +442,11 @@ void executeSCode(struct SCode prog)
             char *read_string = (char *)malloc(sizeof(char) * 200);
             if (strcmp(code_mem[i].args[0].sval, "i") == 0)
             {
-                
+
                 int ivalue;
                 fflush(stdin);
                 scanf("%d", &ivalue);
                 read_value.ival = ivalue;
-
             }
             else if (strcmp(code_mem[i].args[0].sval, "r") == 0)
             {
@@ -469,12 +478,12 @@ void executeSCode(struct SCode prog)
                 fflush(stdin);
                 scanf("%d", &bvalue);
                 read_value.ival = bvalue;
-
-            } else
+            }
+            else
             {
                 fflush(stdin);
             }
-            
+
             if (code_mem[i].args[1].ival)
             {
 
@@ -489,10 +498,8 @@ void executeSCode(struct SCode prog)
 
         case OUT:
             format = code_mem[i].args[1].sval;
-
-            char **printformat = (char **)malloc(sizeof(char *) * strlen(format));
-            int len = code_mem[i].args[0].ival;
-
+            /*char **printformat = (char **)malloc(sizeof(char *) * strlen(format));
+            
             for (int j = 0; j < len; j++)
             {
                 if (format[j] == 'i')
@@ -515,74 +522,70 @@ void executeSCode(struct SCode prog)
                     char f[3] = {' ',format[j], ' '};
                     printformat[j] = strcpy(printformat[j], f);
                 }
-            }
-            
+            }*/
+
+            int len = code_mem[i].args[0].ival;
 
             struct Ostack *temp_stack = createOStack(len);
             struct Ostack_node temp;
 
             for (int j = 0; j < len; j++)
             {
-                temp = opop(oroot);
+                temp = opop(oroot); //non capisco perche triggeri se uso opeek
                 opush(temp_stack, temp.val, temp.size);
             }
-            
 
             Value v;
             for (int j = 0; j < len; j++)
             {
                 v = opop(temp_stack).val;
-                if (strcmp(printformat[j], " %d ") == 0)
+                if (format[j] == 'i')
                 {
-                    if (format[j] == 'b')
-                    {
-                        printf("%d", v.bval);
-                    }
-                    else
-                    {
 
-                        printf("%d", v.ival);
-                    }
+                    printf("%d", v.ival);
                 }
-                else if (strcmp(printformat[j], " %f ") == 0)
+                else if (format[j] == 'b')
+                {
+
+                    printf("%d", v.bval);
+                }
+                else if (format[j] == 'r')
                 {
                     printf("%f", v.fval);
                 }
-                else if (strcmp(printformat[j], " %s ") == 0)
+                else if (format[j] == 's')
                 {
                     printf("%s", v.sval);
-                }
-                else
-                {
-                    printf("%s",printformat[j]);
                 }
             }
             if (strlen(format) > len)
             {
                 printf("\n");
             }
-            
+
             break;
 
         case ENT:
-            global_obj_id = (current_obj_id - global_obj_id) + code_mem[i].args[0].ival;
-            current_obj_id++;
+            global_obj_id++;
+            local_obj_id = 0;
             struct Astack_node record = apeek(aroot);
+            struct data_mem *func_mem = apeek(aroot).local_mem;
+
             for (int j = 0; j < record.objects->capacity; j++)
             {
                 sto_val = opop(record.objects).val;
-                global_mem[global_obj_id + j + 1].val = sto_val;
-                current_obj_id++;
+                func_mem[j + 1].val = sto_val;
+                local_obj_id++;
             }
-            
 
+            current_mem = func_mem;
             env = 1;
             break;
 
         case INC:
             if (code_mem[i].args[0].ival)
             {
-                global_mem[global_obj_id + code_mem[i].args[1].ival].val.ival++;
+                current_mem[code_mem[i].args[1].ival].val.ival++;
             }
             else
             {
@@ -600,7 +603,20 @@ void executeSCode(struct SCode prog)
                 }
             }
 
-            i = apop(aroot).ret_addr;
+            struct Astack_node activation = apop(aroot);
+            i = activation.ret_addr;
+            global_obj_id = activation.call_oid;
+
+            if (i == 2)
+            {
+                current_mem = global_mem;
+            }
+            else
+            {
+
+                current_mem = apeek(aroot).local_mem;
+            }
+            //maybe looking too much in the astack...the last apeek/opeek don't work
             break;
 
         case STP:
@@ -609,3 +625,53 @@ void executeSCode(struct SCode prog)
         }
     }
 }
+
+struct SCode get_scode_from_file(char *filename)
+{
+    FILE *fptr;
+    struct SCode int_scode = endcode();
+
+    if ((fptr = fopen(filename, "rb")) == NULL)
+    {
+        fprintf(stderr,"ERRORE SIMPLAVM: FILE NON ESISTE!");
+        // Program exits if the file pointer returns NULL.
+        exit(-1);
+    }
+
+    fseek(fptr, 0, SEEK_END);
+    unsigned long len = (unsigned long)ftell(fptr);
+
+    if (len > 0)
+    { //check if the file is empty or not.
+        rewind(fptr);
+        struct Stat file_stat;
+        while (!feof(fptr))
+        {
+            fread(&file_stat, sizeof(struct Stat), 1, fptr);
+            printf("Op letta: %d\n", file_stat.op);
+            int_scode = appcode(int_scode, makecode_from_stat(file_stat));
+        }
+    }
+    printf("FILE READING OVER\n");
+    fclose(fptr);
+    return int_scode;
+}
+
+/*int main(int argc, char **argv)
+{
+    struct SCode *scode = (struct SCode *)malloc(sizeof(struct SCode));
+
+    if (argc >= 2)
+    {
+        *scode = get_scode_from_file(argv[1]);
+    }
+    else
+    {
+        fprintf(stderr,"ERRORE SIMPLAVM: INDICARE FILE.SIM DA ESEGUIRE");
+        // Program exits if the file pointer returns NULL.
+        exit(-1);
+    }
+    printf("Starting  Code execution\n");
+    executeSCode(*scode);
+    codeprint(scode);
+}*/

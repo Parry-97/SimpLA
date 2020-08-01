@@ -1,0 +1,29 @@
+a,b: integer;
+flag: boolean;
+
+func maggiore(x: integer, y: integer): integer
+body
+    if x >= y then
+        return x;
+    else
+        return y;
+    end;        
+end;
+
+body
+    flag = true;
+
+    while flag do 
+        write("Inserisci a: ");
+        read(a);
+        write("Inserisci b: ");
+        read(b);
+        writeln("Il numero maggiore tra ", a ," e ",b, "è :", maggiore(a,b));
+        write("Si desidera continuare ?[1 o 0]: ");
+        read(flag);
+        writeln(" ");
+        if a == 100 then
+            break;
+        end;    
+    end;
+end.

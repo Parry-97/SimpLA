@@ -7,6 +7,8 @@ struct Astack_node newANode()
     struct Astack_node *stackNode = (struct Astack_node *)malloc(sizeof(struct Astack_node));
     stackNode->num_objs = 0;
     stackNode->ret_addr = 0;
+    stackNode->call_oid = 0;
+    stackNode->local_mem = NULL;
     stackNode->objects = NULL;
     return *stackNode;
 }
@@ -16,12 +18,14 @@ int isAFull(struct Astack *astack)
     return astack->top == astack->capacity - 1;
 }
 
-void apush(struct Astack *astack, struct Ostack *objects, int num_objs, int ret_addr)
+void apush(struct Astack *astack, struct Ostack *objects, int call_oid ,struct data_mem *local_mem,int num_objs, int ret_addr)
 {
     struct Astack_node stackNode = newANode();
     stackNode.objects = objects;
+    stackNode.call_oid = call_oid;
     stackNode.num_objs = num_objs;
     stackNode.ret_addr = ret_addr;
+    stackNode.local_mem = local_mem;
 
     if (isAFull(astack)) {
         fprintf(stderr, "Activation Stack Overflow\n");
@@ -49,7 +53,7 @@ struct Astack *createAStack(unsigned capacity)
 struct Astack_node apop(struct Astack *astack)
 {
     if (isAEmpty(astack)) {
-        fprintf(stderr, "Empty activation Stack\n");
+        fprintf(stderr, "Empty activation Stack (Invalid APOP)\n");
         exit(-1);
     }
 
@@ -60,7 +64,7 @@ struct Astack_node apeek(struct Astack *astack)
 {
     if (isAEmpty(astack))
     {
-        fprintf(stderr, "Empty Activation Stack\n");
+        fprintf(stderr, "Empty Activation Stack (Invalid APEEK)\n");
         exit(-1);
     }
     return astack->stack[astack->top];

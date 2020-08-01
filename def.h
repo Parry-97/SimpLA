@@ -257,6 +257,8 @@ struct Astack_node
     int num_objs;
     struct Ostack *objects;
     int ret_addr;
+    int call_oid;
+    struct data_mem *local_mem;
     struct Astack_node *next;
 };
 
@@ -309,10 +311,11 @@ void treeprint(Pnode, int),
     insert(char *id, symb_class classe, symb_type tipo, struct bucket symbtab[], int *oid_gg),
     insert_func(char *id, symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[]),
     codeprint(struct SCode *prog),
+    save_to_file(struct SCode *prog, char *filename),
     generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog),
     relocateAddress(struct SCode code, int offset),
     generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog),
-    apush(struct Astack *stack, struct Ostack *objects, int num_objs, int ret_addr),
+    apush(struct Astack *stack, struct Ostack *objects, int call_oid, struct data_mem *local_mem ,int num_objs, int ret_addr),
     opush(struct Ostack *stack, Value val, int size),
     executeSCode(struct SCode prog),
     correct_breaks(struct SCode *prog),
@@ -320,6 +323,8 @@ void treeprint(Pnode, int),
 
 struct SCode appcode(struct SCode code1, struct SCode code2),
     endcode(),
+    makecode_from_stat(struct Stat stat),
+    get_scode_from_file(char *filename),
     concode(struct SCode code1, struct SCode code2, ...),
     makecode(Operator op),
     makecode1(Operator op, int arg),
@@ -328,7 +333,7 @@ struct SCode appcode(struct SCode code1, struct SCode code2),
     make_psh_pop(int num_formals, int num_variables, int entry),
     make_lci(int i),
     makeout(Operator op, int n, char *format),
-    makeread(Operator op, char *format,  int n, int n2),
+    makeread(Operator op, char *format, int n, int n2),
     make_lcr(float r),
     make_lcs(char *s);
 

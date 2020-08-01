@@ -1,5 +1,11 @@
-bup: lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o ostack.o astack.o smachine.o
-	cc -g -o bup lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o ostack.o astack.o smachine.o
+##all: simplac simplavm
+##.PHONY: all
+
+simplac: lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o
+	cc -g -o simplac lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o
+
+##simplavm: lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o
+	##cc -g -o simplavm lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o
 
 lexer.o: lexer.c parser.h def.h
 	cc -g -c lexer.c 
@@ -36,3 +42,7 @@ lexer.c: lexer.lex parser.y parser.h parser.c def.h
 
 parser.h: parser.y def.h
 	bison -vdg -o parser.c parser.y
+
+clean:
+	rm -f lexer.o lexer.c parser.c parser.h parser.output parser.dot parser.o sema.o symbtab.o \
+	tree.o gencode.o printcode.o smachine.o ostack.o astack.o simplac simplavm

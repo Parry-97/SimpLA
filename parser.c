@@ -2548,11 +2548,19 @@ int main(int argc, char **argv)
     lista_id[i] = (char * )malloc(140);
   }
 
-  if (argc >= 2)
-    yyin  = fopen(argv[1], "r");
-  
-  else 
-    yyin = fopen("prova3", "r");
+  if (argc >= 2) {
+    if ((yyin = fopen(argv[1], "r")) == NULL){
+       fprintf(stderr,"ERRORE SIMPLAC: FILE NON ESISTE!");
+       // Program exits if the file pointer returns NULL.
+       exit(-1);
+   }
+  }
+  else {
+      fprintf(stderr,"ERRORE SIMPLAC: INDICARE FILE DA COMPILARE");
+       // Program exits if the file pointer returns NULL.
+       exit(-1);
+  }
+    
 
   if ((result = yyparse()) == 0) {
     //Togliere commento sulla funzione treeprint per visualizzare l'albero sintattico astratto a video
@@ -2572,7 +2580,8 @@ int main(int argc, char **argv)
     *tot_prog = appcode(*tot_prog, makecode(STP));
     *tot_prog = appcode(*tot_prog,*sub_prog10);
 
-    
+    char *s_filename = strcat(argv[1],".sim");
+    //save_to_file(tot_prog, s_filename);
     //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
     codeprint(tot_prog);
 

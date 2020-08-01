@@ -6,15 +6,13 @@ extern int oid_g;
 extern struct bucket *symbol_table;
 
 extern struct SCode *current_prog;
-int is_rhs = 0;
-int is_cast = 0;
 int oidl;
-
 
 int is_break = 0;
 int is_return = 0;
+Pnode expr_list;
 
-
+//CONTROLLARE IS_RHS
 void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 {
 
@@ -35,15 +33,13 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
         switch (p->type)
         {
         case T_ID:
-            if (is_rhs || is_cast)
-            {
-                generateID_Code(p, symbtab, prog);
-                p->is_gen = 1;
-            }
+
+            generateID_Code(p, symbtab, prog);
+            p->is_gen = 1;
             break;
+
         case T_BREAK:
             cont_stat2 = p->brother;
-
 
             is_break = 1;
 
@@ -60,7 +56,6 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             *prog = appcode(*prog, makecode1(BRK, break_jump));
             *prog = appcode(*prog, *sub_prog13);
-    
 
             p->is_gen = 1;
             break;
@@ -96,7 +91,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
         {
 
         case N_PROGRAM:
-            
+
             generateCode(p->child->brother, symbol_table, prog);
             func_bc = find_in_chain("smain", &symbol_table[hash("smain")]);
 
@@ -107,9 +102,9 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             p->is_gen = 1;
 
             break;
-        
-        case N_VAR_DECL:
 
+        case N_VAR_DECL:
+            
             type_size = get_type_size(p->child->brother->type);
 
             int num;
@@ -124,8 +119,8 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
 
         case N_ASSIGN_STAT:
-
             generateCode(p->child->brother, symbtab, prog);
+
             char *id = p->child->value.sval;
 
             int env, oid;
@@ -137,7 +132,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 id_bucket = find_in_chain(id, &symbol_table[hash(id)]);
                 env = 0;
             }
-            
+
             oid = id_bucket->oid;
             struct SCode sto_code = makecode2(STO, env, oid);
 
@@ -146,12 +141,10 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
 
         case N_LOGIC_EXPR:
-            is_rhs = 1;
 
             if (p->op_code == T_AND)
             {
                 generateCode(p->child, symbtab, prog);
-                
 
                 struct SCode *sub_prog5 = (struct SCode *)malloc(sizeof(struct SCode));
                 *sub_prog5 = endcode();
@@ -179,12 +172,11 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 *prog = appcode(*prog, *sub_prog6);
             }
 
-            is_rhs = 0;
             p->is_gen = 1;
             break;
 
         case N_REL_EXPR:
-            is_rhs = 1;
+
             generateCode(p->child, symbtab, prog);
             generateCode(p->child->brother, symbtab, prog);
 
@@ -270,12 +262,12 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 }
                 break;
             }
-            is_rhs = 0;
+
             p->is_gen = 1;
             break;
 
         case N_MATH_EXPR:
-            is_rhs = 1;
+
             generateCode(p->child, symbtab, prog);
             generateCode(p->child->brother, symbtab, prog);
 
@@ -333,12 +325,12 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 *prog = appcode(*prog, math_code);
                 break;
             }
-            is_rhs = 0;
+
             p->is_gen = 1;
             break;
 
         case N_NEG_EXPR:
-            is_rhs = 1;
+
             generateCode(p->child, symbtab, prog);
             if (p->op_code == T_NOT)
             {
@@ -355,15 +347,14 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                     *prog = appcode(*prog, makecode(UMI));
                 }
             }
-            is_rhs = 0;
+
             p->is_gen = 1;
             break;
 
         case N_COND_EXPR:
-            is_rhs = 1;
+
             generateCode(p->child, symbtab, prog);
 
-            
             struct SCode *sub_prog1 = (struct SCode *)malloc(sizeof(struct SCode));
             *sub_prog1 = endcode();
             generateCode(p->child->brother, symbtab, sub_prog1);
@@ -373,7 +364,6 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             *prog = appcode(*prog, makecode1(JMF, cond_offset));
             *prog = appcode(*prog, *sub_prog1);
 
-        
             struct SCode *sub_prog2 = (struct SCode *)malloc(sizeof(struct SCode));
             *sub_prog2 = endcode();
             generateCode(p->child->brother->brother, symbtab, sub_prog2);
@@ -382,13 +372,10 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             *prog = appcode(*prog, makecode1(JMP, exit));
             *prog = appcode(*prog, *sub_prog2);
 
-            is_rhs = 0;
             p->is_gen = 1;
             break;
 
         case N_CASTING:
-
-            is_cast = 1;
             generateCode(p->child, symbtab, prog);
 
             if (p->op_code == T_INTEGER)
@@ -402,7 +389,6 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             *prog = appcode(*prog, cast_code);
 
-            is_cast = 0;
             p->is_gen = 1;
             p->child->is_gen = 1;
             break;
@@ -419,7 +405,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 struct bucket *cont_bucket = find_in_chain_senza_errore(cont->value.sval, &symbtab[hash(cont->value.sval)]);
 
                 env1 = symbtab == symbol_table ? 0 : 1;
-                
+
                 if (cont_bucket == NULL)
                 {
                     cont_bucket = find_in_chain(cont->value.sval, &symbol_table[hash(cont->value.sval)]);
@@ -438,13 +424,13 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
 
         case N_WRITE_STAT:
-            is_rhs = 1;
+
             count_expr = p->child->brother->child;
             int num_expr;
             num_expr = conta_fratelli(count_expr, 0);
 
             char *write_format = (char *)malloc(sizeof(char) * 25);
-         
+
             while (count_expr != NULL)
             {
                 generateCode(count_expr, symbtab, prog);
@@ -459,28 +445,28 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             *prog = appcode(*prog, makeout(OUT, num_expr, write_format));
             p->is_gen = 1;
-            is_rhs = 0;
+
             break;
 
         case N_FUNC_CALL:
-            is_rhs = 1;
-            Pnode expr_list = p->child->brother;
+
+            expr_list = p->child->brother;
 
             int num_formals;
 
-            if(expr_list != NULL)
+            if (expr_list != NULL)
             {
                 count_bro = expr_list->child;
                 num_formals = conta_fratelli(count_bro, 0);
-                is_rhs = 1;
+
                 while (count_bro != NULL)
                 {
                     /* code */
                     generateCode(count_bro, symbtab, prog);
                     count_bro = count_bro->brother;
                 }
-                is_rhs = 0;
-            } else
+            }
+            else
             {
                 num_formals = 0;
             }
@@ -490,9 +476,9 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             int entry;
             entry = get_func_entry_point(current_prog, p->child->value.sval);
-            
+
             *prog = appcode(*prog, make_psh_pop(num_formals, num_variables, entry));
-            is_rhs = 0;
+
             p->is_gen = 1;
             break;
 
@@ -503,11 +489,11 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             int while_expr_len = while_expr->num;
             *prog = appcode(*prog, *while_expr);
-            
+
             struct SCode *sub_prog3 = (struct SCode *)malloc(sizeof(struct SCode));
             *sub_prog3 = endcode();
             generateCode(p->child->brother, symbtab, sub_prog3);
-            
+
             int offset;
             offset = sub_prog3->num;
 
@@ -520,7 +506,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             *sub_prog_while = appcode(*sub_prog_while, makecode1(JMP, 1));
             correct_breaks(sub_prog_while);
 
-            *prog = appcode(*prog, *sub_prog_while);    
+            *prog = appcode(*prog, *sub_prog_while);
             p->is_gen = 1;
 
             break;
@@ -530,7 +516,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             if (p->child->brother->brother != NULL)
             {
-                
+
                 struct SCode *sub_prog7 = (struct SCode *)malloc(sizeof(struct SCode));
                 *sub_prog7 = endcode();
                 generateCode(p->child->brother, symbtab, sub_prog7);
@@ -538,7 +524,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
                 *prog = appcode(*prog, makecode1(JMF, if_offset));
                 *prog = appcode(*prog, *sub_prog7);
-                
+
                 struct SCode *sub_prog8 = (struct SCode *)malloc(sizeof(struct SCode));
                 *sub_prog8 = endcode();
                 generateCode(p->child->brother->brother, symbtab, sub_prog8);
@@ -560,14 +546,12 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             }
 
             p->is_gen = 1;
-            break;   
+            break;
 
         case N_FOR_STAT:
 
-            
             generateCode(p->child->brother, symbtab, prog);
             char *index_id = p->child->value.sval;
-
 
             struct bucket *index_bucket = find_in_chain_senza_errore(index_id, &symbtab[hash(index_id)]);
             env2 = symbtab == symbol_table ? 0 : 1;
@@ -582,6 +566,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             *prog = appcode(*prog, makecode2(STO, env2, oid2));
 
             generateCode(p->child->brother->brother, symbtab, prog);
+
             int oid3 = create_int_temp(symbtab, &oidl);
             int env3 = symbtab == symbol_table ? 0 : 1;
 
@@ -612,12 +597,11 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
 
         case N_FUNC_DECL:
- 
 
-            func_bc = find_in_chain(p->child->value.sval, &symbol_table[hash(p->child->value.sval)]);  
+            func_bc = find_in_chain(p->child->value.sval, &symbol_table[hash(p->child->value.sval)]);
             oidl = count_var(func_bc->env.local_env) + func_bc->formali.num;
             *prog = appcode(*prog, makecode1(ENT, func_bc->oid));
-        
+
             struct SCode *func_body = (struct SCode *)malloc(sizeof(struct SCode));
             *func_body = endcode();
 
@@ -650,11 +634,10 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
         case N_RETURN_STAT:
             if (p->child != NULL)
             {
-                is_rhs = 1;
+
                 generateCode(p->child, symbtab, prog);
-                is_rhs = 0;
             }
-            
+
             cont_stat3 = p->brother;
 
             struct SCode *sub_prog14 = (struct SCode *)malloc(sizeof(struct SCode));
@@ -677,7 +660,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
         }
 
-        if (p->child != NULL)
+        if (p->child != NULL && !p->is_gen)
         {
             generateCode(p->child, symbtab, prog);
 
@@ -691,7 +674,8 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
     }
 }
 
-void correct_breaks(struct SCode *sub_cycle) {
+void correct_breaks(struct SCode *sub_cycle)
+{
     int cycle_len = sub_cycle->num;
     struct Stat *cont_stat = sub_cycle->first;
 
@@ -702,11 +686,10 @@ void correct_breaks(struct SCode *sub_cycle) {
         {
             cont_stat->op = JMP;
             cont_stat->args[0].ival = cycle_len - k;
-        }   
-        cont_stat = cont_stat->next;    
+        }
+        cont_stat = cont_stat->next;
         k++;
     }
-    
 }
 
 void correct_returns(struct SCode *func_body)
@@ -849,6 +832,14 @@ struct SCode makecode(Operator op)
     return code;
 }
 
+struct SCode makecode_from_stat(struct Stat stat)
+{
+    struct SCode code;
+    code.first = code.last = &stat;
+    code.num = 1;
+    return code;
+}
+
 struct SCode makecode1(Operator op, int arg)
 {
     struct SCode code;
@@ -879,8 +870,8 @@ struct SCode makecode3(Operator op, int arg1, int arg2, int arg3)
 struct SCode make_psh_pop(int num_formals, int num_variables, int entry)
 {
     struct SCode code;
-    code = appcode(makecode2(PSH, num_formals, num_variables),makecode1(GOT, entry));
-    code = appcode(code,makecode(POP));
+    code = appcode(makecode2(PSH, num_formals, num_variables), makecode1(GOT, entry));
+    code = appcode(code, makecode(POP));
     return code;
 }
 

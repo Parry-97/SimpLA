@@ -1,0 +1,30 @@
+numero: integer;
+func fattoriale(n: integer): real
+  fact: real;
+body
+  if n == 0 then
+    fact = 1.0;
+  else
+    fact = real(n) * fattoriale(n - ­1);
+  end;
+  return fact;
+end;
+
+func stampaFattoriali(tot: integer): void
+  i : integer;
+  f: real;
+body
+  for i=0 to tot do
+    f = fattoriale(i);
+    writeln("Il fattoriale di ", i, "è ", f);
+  end;
+end;
+
+body
+  read(numero);
+  if numero < 0 then
+    writeln("Il numero ", numero, "non è valido");
+  else
+    stampaFattoriali(numero);
+  end;
+end.

@@ -51,11 +51,27 @@ char *codeops[] =
         "SIZ",
         "STP"};
 
+
+void save_to_file(struct SCode *prog, char *filename) {
+    FILE *fptr;
+    fptr = fopen(filename, "wb");
+
+    struct Stat *save_stat = prog->first;
+
+    for (int i = 0; i < prog->num; i++)
+    {
+        fwrite(save_stat, sizeof(struct Stat), 1, fptr);
+        save_stat = save_stat->next;
+    }
+    
+    fclose(fptr);
+}
+
 void codeprint(struct SCode *prog) {
     struct Stat *iter_stat = (struct Stat *)malloc(sizeof(struct Stat));
     
+    printf("Start Codeprint\n");
     iter_stat = prog->first;
-
     while(iter_stat != NULL)
     {
         printf("%s %s\n", codeops[iter_stat->op] , print_args(*iter_stat));
@@ -66,10 +82,8 @@ void codeprint(struct SCode *prog) {
 
 char * print_args(struct Stat stat) {
 
-    char * str_args = (char*)malloc(10*sizeof(char));
+    char * str_args = (char*)malloc(280*sizeof(char));
     
-
-
     switch (stat.op)
     {
     case VARI: 
