@@ -67,9 +67,14 @@ void executeSCode(struct SCode prog)
     aroot = createAStack(256);
     oroot = createOStack(256);
 
+    struct Ostack *next_stack;
+    struct Ostack *current_stack;
+
     struct Stat *scode = prog.first;
 
     current_mem = global_mem;
+    current_stack = oroot;
+    
 
     for (int i = 0; i < prog.num && !end_of_program; i++)
     {
@@ -89,11 +94,11 @@ void executeSCode(struct SCode prog)
             break;
 
         case LCI:
-            opush(oroot, code_mem[i].args[0], get_type_size(T_INTEGER));
+            opush(current_stack, code_mem[i].args[0], get_type_size(T_INTEGER));
             break;
 
         case LCR:
-            opush(oroot, code_mem[i].args[0], get_type_size(T_REAL));
+            opush(current_stack, code_mem[i].args[0], get_type_size(T_REAL));
             break;
 
         case LCS:
@@ -107,7 +112,7 @@ void executeSCode(struct SCode prog)
             {
                 string_table[hash(code_mem[i].args[0].sval)] = code_mem[i].args[0].sval;
             }
-            opush(oroot, code_mem[i].args[0], get_type_size(T_STRING));
+            opush(current_stack, code_mem[i].args[0], get_type_size(T_STRING));
             break;
 
         case LOD:
@@ -121,12 +126,12 @@ void executeSCode(struct SCode prog)
                 lod_data = global_mem[code_mem[i].args[1].ival];
             }
             Value lod_value = lod_data.val;
-            opush(oroot, lod_value, lod_data.size);
+            opush(current_stack, lod_value, lod_data.size);
             break;
 
         case STO:
 
-            sto_val = opop(oroot).val;
+            sto_val = opop(current_stack).val;
             if (code_mem[i].args[0].ival)
             {
 
@@ -139,7 +144,7 @@ void executeSCode(struct SCode prog)
             break;
 
         case JMF:
-            jmf_decision = opop(oroot).val;
+            jmf_decision = opop(current_stack).val;
 
             if (!jmf_decision.bval)
             {
@@ -152,8 +157,8 @@ void executeSCode(struct SCode prog)
             break;
 
         case EQU:
-            node1 = opop(oroot);
-            node2 = opop(oroot);
+            node1 = opop(current_stack);
+            node2 = opop(current_stack);
 
             if (node1.size == 4)
             {
@@ -168,12 +173,12 @@ void executeSCode(struct SCode prog)
                 ris.bval = node1.val.sval == node2.val.sval ? 1 : 0;
             }
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case NEQ:
-            node1 = opop(oroot);
-            node2 = opop(oroot);
+            node1 = opop(current_stack);
+            node2 = opop(current_stack);
 
             if (node1.size == 4)
             {
@@ -188,212 +193,212 @@ void executeSCode(struct SCode prog)
                 ris.bval = node1.val.sval != node2.val.sval ? 1 : 0;
             }
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case GTI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.bval = num2 > num1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case GEI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.bval = num2 >= num1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case LTI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.bval = num2 < num1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case LEI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.bval = num2 <= num1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
 
             break;
 
         case GTR:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.bval = num_f2 > num_f1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
 
             break;
 
         case GER:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.bval = num_f2 >= num_f1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case LTR:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.bval = num_f2 < num_f1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case LER:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.bval = num_f2 <= num_f1 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case GTS:
-            s1 = opop(oroot).val.sval;
-            s2 = opop(oroot).val.sval;
+            s1 = opop(current_stack).val.sval;
+            s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s1, s2) > 0 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case GES:
-            s1 = opop(oroot).val.sval;
-            s2 = opop(oroot).val.sval;
+            s1 = opop(current_stack).val.sval;
+            s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s1, s2) >= 0 ? 1 : 0;
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case LTS:
-            s1 = opop(oroot).val.sval;
-            s2 = opop(oroot).val.sval;
+            s1 = opop(current_stack).val.sval;
+            s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s1, s2) < 0 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case LES:
-            s1 = opop(oroot).val.sval;
-            s2 = opop(oroot).val.sval;
+            s1 = opop(current_stack).val.sval;
+            s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s1, s2) <= 0 ? 1 : 0;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case ADI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.ival = num2 + num1;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case SBI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.ival = num2 - num1;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case MUI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.ival = num2 * num1;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case DVI:
-            num1 = opop(oroot).val.ival;
-            num2 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
+            num2 = opop(current_stack).val.ival;
 
             ris.ival = (int)(num2 / num1);
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case ADR:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.fval = num_f2 + num_f1;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case SBR:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.fval = num_f2 - num_f1;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case MUR:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.fval = num_f2 * num_f1;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case DVR:
-            num_f1 = opop(oroot).val.fval;
-            num_f2 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
+            num_f2 = opop(current_stack).val.fval;
 
             ris.fval = num_f2 / num_f1;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case UMI:
-            num1 = opop(oroot).val.ival;
+            num1 = opop(current_stack).val.ival;
 
             ris.ival = -num1;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case UMR:
-            num_f1 = opop(oroot).val.fval;
+            num_f1 = opop(current_stack).val.fval;
 
             ris.fval = -num_f1;
 
-            opush(oroot, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, get_type_size(T_REAL));
             break;
 
         case NEG:
-            num2 = opop(oroot).val.bval;
+            num2 = opop(current_stack).val.bval;
 
             ris.bval = num2 ? 0 : 1;
 
-            opush(oroot, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
         case PSH:
@@ -401,14 +406,16 @@ void executeSCode(struct SCode prog)
             v1 = code_mem[i].args[0];
             v2 = code_mem[i].args[1];
 
-            struct Ostack *param_stack = createOStack(v1.ival);
+            struct Ostack *param_stack = createOStack(100);
             struct Ostack_node param;
             ;
 
             for (int j = 0; j < v1.ival; j++)
             {
-                param = opop(oroot);
+                param = opop(current_stack);
+                //printf("Prob in PSH\n");
                 opush(param_stack, param.val, param.size);
+                //printf("Dopo il PSH\n");
             }
 
             apush(aroot, param_stack, call_oid, (struct data_mem *)malloc(sizeof(struct data_mem) * 200), v2.ival, i + 1);
@@ -423,18 +430,18 @@ void executeSCode(struct SCode prog)
             break;
 
         case TOI:
-            ovalue = opop(oroot).val;
+            ovalue = opop(current_stack).val;
             Value toi;
             toi.ival = (int)ovalue.fval;
-            opush(oroot, toi, get_type_size(T_INTEGER));
+            opush(current_stack, toi, get_type_size(T_INTEGER));
 
             break;
 
         case TOR:
-            ovalue = opop(oroot).val;
+            ovalue = opop(current_stack).val;
             Value tor;
             tor.fval = (float)ovalue.ival;
-            opush(oroot, tor, get_type_size(T_REAL));
+            opush(current_stack, tor, get_type_size(T_REAL));
             break;
 
         case INP:
@@ -487,7 +494,7 @@ void executeSCode(struct SCode prog)
             if (code_mem[i].args[1].ival)
             {
 
-                global_mem[global_obj_id + code_mem[i].args[2].ival].val = read_value;
+                current_mem[code_mem[i].args[2].ival].val = read_value;
             }
             else
             {
@@ -531,7 +538,7 @@ void executeSCode(struct SCode prog)
 
             for (int j = 0; j < len; j++)
             {
-                temp = opop(oroot); //non capisco perche triggeri se uso opeek
+                temp = opop(current_stack); //non capisco perche triggeri se uso opeek
                 opush(temp_stack, temp.val, temp.size);
             }
 
@@ -570,15 +577,22 @@ void executeSCode(struct SCode prog)
             local_obj_id = 0;
             struct Astack_node record = apeek(aroot);
             struct data_mem *func_mem = apeek(aroot).local_mem;
-
-            for (int j = 0; j < record.objects->capacity; j++)
+            
+            int j = 0;
+            while(!isOEmpty(record.objects))
             {
                 sto_val = opop(record.objects).val;
                 func_mem[j + 1].val = sto_val;
                 local_obj_id++;
+                j++;
             }
 
             current_mem = func_mem;
+            //record.objects = createOStack(100);
+            //printf("objects new capacity: %d\n", record.objects->capacity);
+            current_stack = record.objects;
+            //printf("current stack new capacity: %d\n", current_stack->capacity);
+
             env = 1;
             break;
 
@@ -596,27 +610,39 @@ void executeSCode(struct SCode prog)
         case RET:
             if (!code_mem[i].args[0].ival)
             {
-                if (!isOEmpty(oroot))
+                if (!isOEmpty(current_stack))
                 {
                     fprintf(stderr, "Return Error!\n");
                     exit(-1);
                 }
             }
-
+            
             struct Astack_node activation = apop(aroot);
-            i = activation.ret_addr;
             global_obj_id = activation.call_oid;
+            int ret_i = activation.ret_addr;
 
-            if (i == 2)
+            if (ret_i == 2)
             {
                 current_mem = global_mem;
+                current_stack = oroot;
             }
             else
             {
 
                 current_mem = apeek(aroot).local_mem;
+                next_stack = apeek(aroot).objects;
+                if (code_mem[i].args[0].ival)
+                {
+                    //printf("Prob nel caso di RET %d\n",code_mem[i].args[0].ival);
+                    struct Ostack_node ret = opop(current_stack);
+                    opush(next_stack, ret.val,ret.size);
+                    //printf("Fine Prob in RET\n");
+                }
+                current_stack = next_stack;
+                
             }
             //maybe looking too much in the astack...the last apeek/opeek don't work
+            i = ret_i;
             break;
 
         case STP:
@@ -672,6 +698,6 @@ struct SCode get_scode_from_file(char *filename)
         exit(-1);
     }
     printf("Starting  Code execution\n");
-    executeSCode(*scode);
     codeprint(scode);
+    executeSCode(*scode);
 }*/

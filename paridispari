@@ -1,0 +1,50 @@
+countp, countd,n :integer;
+bul: boolean;
+
+func contapari(): void
+body
+    countp = countp + 1;
+end;
+
+func contadispari(): void
+body
+    countd = countd + 1;
+end;
+
+func resto(x: real): real
+temp: integer;
+body
+    temp = integer(x);
+    x = x - real(temp);
+    return x;
+end;
+
+func smistanumeri(numero: integer): boolean
+divisione: real;
+body
+    divisione = real(numero) / real(2);  
+    if resto(divisione) == 0.0 then
+        contapari();
+        return true;
+    else    
+        contadispari();
+        return false;
+    end;
+end;
+
+body
+    bul = true;
+    countd = 0;
+    countp = 0;
+    
+    while bul do
+        write("Inserisci un numero per verificare la parità: ");
+        read(n);
+        writeln("Il numero ", n , "indicato è pari?: ", if smistanumeri(n) then "true" else "false" end);
+        writeln("Si desidera proseguire ?[1,0]: ");
+        read(bul);
+    end;
+    writeln("# numero dispari: ", countd);
+    writeln("# numero pari: ", countp);    
+end.
+

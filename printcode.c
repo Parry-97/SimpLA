@@ -70,8 +70,10 @@ void save_to_file(struct SCode *prog, char *filename) {
 void codeprint(struct SCode *prog) {
     struct Stat *iter_stat = (struct Stat *)malloc(sizeof(struct Stat));
     
-    printf("Start Codeprint\n");
+    //printf("Start Codeprint\n");
     iter_stat = prog->first;
+    //printf("Inizio while\n");
+    
     while(iter_stat != NULL)
     {
         printf("%s %s\n", codeops[iter_stat->op] , print_args(*iter_stat));
@@ -99,6 +101,7 @@ char * print_args(struct Stat stat) {
         break;
 
     case LCS:
+        //printf("Inizio LCS\n");
         sprintf(str_args, "%s", stat.args[0].sval);
         break;
 

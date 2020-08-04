@@ -1,0 +1,22 @@
+i,j: integer;
+
+func testi (): void
+body
+    i = i + 1;
+end;
+
+func fprova(k: integer): boolean
+body
+    if k > 5 then
+        testi();
+        return true;
+    else
+        return false;    
+    end;    
+end;
+
+body
+    for j = 3 to 9 do
+        writeln("Il numero ",j," è piu grande di 5 :", fprova(j), "| i = ",i);
+    end;    
+end.
