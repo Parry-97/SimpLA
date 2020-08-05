@@ -1,5 +1,5 @@
-#all: simplac simplavm
-#.PHONY: all
+all: simplac #simplavm
+.PHONY: all
 
 simplac: lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o
 	cc -g -o simplac lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o

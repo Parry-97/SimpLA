@@ -108,7 +108,7 @@ int *current_oid;
 int isRead = 0;
 
 
-#line 112 "parser.c"
+#line 112 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -139,10 +139,7 @@ int isRead = 0;
 # define YYERROR_VERBOSE 0
 #endif
 
-/* Use api.header.include to #include this header
-   instead of duplicating it here.  */
-#ifndef YY_YY_PARSER_H_INCLUDED
-# define YY_YY_PARSER_H_INCLUDED
+
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -199,6 +196,48 @@ extern int yydebug;
     ERROR = 298
   };
 #endif
+/* Tokens.  */
+#define FUNC 258
+#define BODY 259
+#define END 260
+#define IF 261
+#define THEN 262
+#define ELSE 263
+#define WHILE 264
+#define DO 265
+#define FOR 266
+#define TO 267
+#define BREAK 268
+#define RETURN 269
+#define WRITE 270
+#define WRITELN 271
+#define READ 272
+#define AND 273
+#define OR 274
+#define NOT 275
+#define EQ 276
+#define NE 277
+#define GE 278
+#define GT 279
+#define LT 280
+#define LE 281
+#define MUL 282
+#define PLUS 283
+#define DIV 284
+#define MINUS 285
+#define DECL 286
+#define VOID 287
+#define INTEGER 288
+#define STRING 289
+#define BOOLEAN 290
+#define REAL 291
+#define REALCONST 292
+#define INTCONST 293
+#define STRCONST 294
+#define ID 295
+#define BOOLCONST 296
+#define ASSIGN 297
+#define ERROR 298
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -212,7 +251,7 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_PARSER_H_INCLUDED  */
+
 
 
 
@@ -1499,37 +1538,37 @@ yyreduce:
                                                 {root = yyval = nontermnode(N_PROGRAM); yyval->child = nontermnode(N_VAR_DECL_LIST); yyval->child->child = yyvsp[-3]; 
                                                  yyval->child->brother = nontermnode(N_FUNC_DECL_LIST); yyval->child->brother->child = yyvsp[-2];
                                                  yyval->child->brother->brother = yyvsp[-1]; insert_func("smain",S_VOID_,init_pf(0),NULL,symbol_table);}
-#line 1503 "parser.c"
+#line 1542 "y.tab.c"
     break;
 
   case 3:
 #line 52 "parser.y"
                                        {yyval = yyvsp[-1]; yyvsp[-1]->brother = yyvsp[0];}
-#line 1509 "parser.c"
+#line 1548 "y.tab.c"
     break;
 
   case 4:
 #line 53 "parser.y"
                 {yyval = NULL;}
-#line 1515 "parser.c"
+#line 1554 "y.tab.c"
     break;
 
   case 5:
 #line 55 "parser.y"
            {current_class = VAR;}
-#line 1521 "parser.c"
+#line 1560 "y.tab.c"
     break;
 
   case 6:
 #line 55 "parser.y"
                                                        {yyval = nontermnode(N_VAR_DECL); yyval->child = nontermnode(N_ID_LIST); yyval->child->child = yyvsp[-3]; yyval->child->brother = yyvsp[-1];}
-#line 1527 "parser.c"
+#line 1566 "y.tab.c"
     break;
 
   case 7:
 #line 57 "parser.y"
              {yyval = idnode();}
-#line 1533 "parser.c"
+#line 1572 "y.tab.c"
     break;
 
   case 8:
@@ -1539,7 +1578,7 @@ yyreduce:
             lista_id[indice++] = yyvsp[-2]->value.sval;    
           }
           }
-#line 1543 "parser.c"
+#line 1582 "y.tab.c"
     break;
 
   case 9:
@@ -1548,7 +1587,7 @@ yyreduce:
         if (!isRead) {
             lista_id[indice++] = yyval->value.sval;    
           }}
-#line 1552 "parser.c"
+#line 1591 "y.tab.c"
     break;
 
   case 10:
@@ -1578,7 +1617,7 @@ yyreduce:
                 };
                 
                 }
-#line 1582 "parser.c"
+#line 1621 "y.tab.c"
     break;
 
   case 11:
@@ -1606,7 +1645,7 @@ yyreduce:
                 };
                 
             }
-#line 1610 "parser.c"
+#line 1649 "y.tab.c"
     break;
 
   case 12:
@@ -1632,7 +1671,7 @@ yyreduce:
                   indice = 0;
                 };
               }
-#line 1636 "parser.c"
+#line 1675 "y.tab.c"
     break;
 
   case 13:
@@ -1657,7 +1696,7 @@ yyreduce:
                   indice = 0;
                 };
               }
-#line 1661 "parser.c"
+#line 1700 "y.tab.c"
     break;
 
   case 14:
@@ -1682,43 +1721,43 @@ yyreduce:
                   indice = 0;
                 };
             }
-#line 1686 "parser.c"
+#line 1725 "y.tab.c"
     break;
 
   case 15:
 #line 178 "parser.y"
                                           {yyval = yyvsp[-1]; yyvsp[-1]->brother = yyvsp[0];}
-#line 1692 "parser.c"
+#line 1731 "y.tab.c"
     break;
 
   case 16:
 #line 179 "parser.y"
                  {yyval = NULL;}
-#line 1698 "parser.c"
+#line 1737 "y.tab.c"
     break;
 
   case 17:
 #line 181 "parser.y"
                     {yyval = idnode(); id_func = yyval->value.sval;}
-#line 1704 "parser.c"
+#line 1743 "y.tab.c"
     break;
 
   case 18:
 #line 181 "parser.y"
                                                                {current_env = temp_env; current_oid = &oid_locale;}
-#line 1710 "parser.c"
+#line 1749 "y.tab.c"
     break;
 
   case 19:
 #line 181 "parser.y"
                                                                                                                                                {current_class = FUN;}
-#line 1716 "parser.c"
+#line 1755 "y.tab.c"
     break;
 
   case 20:
 #line 182 "parser.y"
             {current_env = symbol_table; current_oid = &oid_g;}
-#line 1722 "parser.c"
+#line 1761 "y.tab.c"
     break;
 
   case 21:
@@ -1747,239 +1786,239 @@ yyreduce:
             oid_locale = 0;
             temp_env = init_symbol_table(SYMTAB_SIZE);
             temp_descr = (struct bucket **)malloc(25 * sizeof(struct bucket *));}
-#line 1751 "parser.c"
+#line 1790 "y.tab.c"
     break;
 
   case 22:
 #line 209 "parser.y"
                             {yyval = nontermnode(N_OPT_PARAM_LIST); yyval->child = yyvsp[0];}
-#line 1757 "parser.c"
+#line 1796 "y.tab.c"
     break;
 
   case 23:
 #line 210 "parser.y"
                  {yyval = NULL;}
-#line 1763 "parser.c"
+#line 1802 "y.tab.c"
     break;
 
   case 24:
 #line 212 "parser.y"
                                        {yyval = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];}
-#line 1769 "parser.c"
+#line 1808 "y.tab.c"
     break;
 
   case 25:
 #line 213 "parser.y"
                         {yyval = yyvsp[0];}
-#line 1775 "parser.c"
+#line 1814 "y.tab.c"
     break;
 
   case 26:
 #line 215 "parser.y"
              {current_class = PAR; numero_param_formali++;}
-#line 1781 "parser.c"
+#line 1820 "y.tab.c"
     break;
 
   case 27:
 #line 215 "parser.y"
                                                               {yyval = idnode(); lista_id[indice++] = yyval->value.sval;}
-#line 1787 "parser.c"
+#line 1826 "y.tab.c"
     break;
 
   case 28:
 #line 215 "parser.y"
                                                                                                                               {yyval = nontermnode(N_PARAM_DECL); yyval->child = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];}
-#line 1793 "parser.c"
+#line 1832 "y.tab.c"
     break;
 
   case 29:
 #line 217 "parser.y"
                           {yyval = nontermnode(N_STAT_LIST); yyval->child = yyvsp[-1];}
-#line 1799 "parser.c"
+#line 1838 "y.tab.c"
     break;
 
   case 30:
 #line 219 "parser.y"
                                {yyval = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];}
-#line 1805 "parser.c"
+#line 1844 "y.tab.c"
     break;
 
   case 31:
 #line 220 "parser.y"
                      {yyval = yyvsp[-1];}
-#line 1811 "parser.c"
+#line 1850 "y.tab.c"
     break;
 
   case 32:
 #line 222 "parser.y"
                    {yyval = yyvsp[0];}
-#line 1817 "parser.c"
+#line 1856 "y.tab.c"
     break;
 
   case 33:
 #line 223 "parser.y"
                {yyval = yyvsp[0];}
-#line 1823 "parser.c"
+#line 1862 "y.tab.c"
     break;
 
   case 34:
 #line 224 "parser.y"
                   {yyval = yyvsp[0];}
-#line 1829 "parser.c"
+#line 1868 "y.tab.c"
     break;
 
   case 35:
 #line 225 "parser.y"
                 {yyval = yyvsp[0];}
-#line 1835 "parser.c"
+#line 1874 "y.tab.c"
     break;
 
   case 36:
 #line 226 "parser.y"
                    {yyval = yyvsp[0];}
-#line 1841 "parser.c"
+#line 1880 "y.tab.c"
     break;
 
   case 37:
 #line 227 "parser.y"
                  {yyval = yyvsp[0];}
-#line 1847 "parser.c"
+#line 1886 "y.tab.c"
     break;
 
   case 38:
 #line 228 "parser.y"
                   {yyval = yyvsp[0];}
-#line 1853 "parser.c"
+#line 1892 "y.tab.c"
     break;
 
   case 39:
 #line 229 "parser.y"
                  {yyval = yyvsp[0];}
-#line 1859 "parser.c"
+#line 1898 "y.tab.c"
     break;
 
   case 40:
 #line 230 "parser.y"
              {yyval = keynode(T_BREAK);}
-#line 1865 "parser.c"
+#line 1904 "y.tab.c"
     break;
 
   case 41:
 #line 232 "parser.y"
                  {yyval = idnode();}
-#line 1871 "parser.c"
+#line 1910 "y.tab.c"
     break;
 
   case 42:
 #line 232 "parser.y"
                                               {yyval = nontermnode(N_ASSIGN_STAT); yyval->child = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];}
-#line 1877 "parser.c"
+#line 1916 "y.tab.c"
     break;
 
   case 43:
 #line 234 "parser.y"
                                                    {yyval = nontermnode(N_IF_STAT); yyval->child = yyvsp[-4];
           yyvsp[-4]->brother = nontermnode(N_STAT_LIST); yyvsp[-4]->brother->child = yyvsp[-2]; yyvsp[-4]->brother->brother = yyvsp[-1];}
-#line 1884 "parser.c"
+#line 1923 "y.tab.c"
     break;
 
   case 44:
 #line 237 "parser.y"
                                {yyval = nontermnode(N_STAT_LIST); yyval->child = yyvsp[0];}
-#line 1890 "parser.c"
+#line 1929 "y.tab.c"
     break;
 
   case 45:
 #line 238 "parser.y"
                 {yyval = NULL;}
-#line 1896 "parser.c"
+#line 1935 "y.tab.c"
     break;
 
   case 46:
 #line 240 "parser.y"
                                          {yyval = nontermnode(N_WHILE_STAT); yyval->child = yyvsp[-3];
              yyvsp[-3]->brother = nontermnode(N_STAT_LIST); yyvsp[-3]->brother->child = yyvsp[-1];}
-#line 1903 "parser.c"
+#line 1942 "y.tab.c"
     break;
 
   case 47:
 #line 243 "parser.y"
                   {yyval = idnode();}
-#line 1909 "parser.c"
+#line 1948 "y.tab.c"
     break;
 
   case 48:
 #line 243 "parser.y"
                                                                         {yyval = nontermnode(N_FOR_STAT); yyval->child = yyvsp[-7]; 
             yyvsp[-7]->brother = yyvsp[-5]; yyvsp[-5]->brother = yyvsp[-3]; yyvsp[-3]->brother = nontermnode(N_STAT_LIST); yyvsp[-3]->brother->child = yyvsp[-1];}
-#line 1916 "parser.c"
+#line 1955 "y.tab.c"
     break;
 
   case 49:
 #line 246 "parser.y"
                               {yyval = nontermnode(N_RETURN_STAT); yyval->child = yyvsp[0];}
-#line 1922 "parser.c"
+#line 1961 "y.tab.c"
     break;
 
   case 50:
 #line 248 "parser.y"
                 {yyval = yyvsp[0];}
-#line 1928 "parser.c"
+#line 1967 "y.tab.c"
     break;
 
   case 51:
 #line 249 "parser.y"
            {yyval = NULL;}
-#line 1934 "parser.c"
+#line 1973 "y.tab.c"
     break;
 
   case 52:
 #line 251 "parser.y"
                  {isRead = 1;}
-#line 1940 "parser.c"
+#line 1979 "y.tab.c"
     break;
 
   case 53:
 #line 251 "parser.y"
                                           {isRead = 0;}
-#line 1946 "parser.c"
+#line 1985 "y.tab.c"
     break;
 
   case 54:
 #line 251 "parser.y"
                                                             {yyval = nontermnode(N_READ_STAT);yyval->child = nontermnode(N_ID_LIST); yyval->child->child = yyvsp[-2];}
-#line 1952 "parser.c"
+#line 1991 "y.tab.c"
     break;
 
   case 55:
 #line 253 "parser.y"
                                         {yyval = nontermnode(N_WRITE_STAT); yyval->op_code = yyvsp[-3]->type; yyval->child = yyvsp[-3]; yyvsp[-3]->brother = nontermnode(N_EXPR_LIST); 
                                         yyvsp[-3]->brother->child = yyvsp[-1];}
-#line 1959 "parser.c"
+#line 1998 "y.tab.c"
     break;
 
   case 56:
 #line 256 "parser.y"
                  {yyval = keynode(T_WRITE);}
-#line 1965 "parser.c"
+#line 2004 "y.tab.c"
     break;
 
   case 57:
 #line 257 "parser.y"
                    {yyval = keynode(T_WRITELN);}
-#line 1971 "parser.c"
+#line 2010 "y.tab.c"
     break;
 
   case 58:
 #line 259 "parser.y"
                                {yyval = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];}
-#line 1977 "parser.c"
+#line 2016 "y.tab.c"
     break;
 
   case 59:
 #line 260 "parser.y"
                  {yyval = yyvsp[0];}
-#line 1983 "parser.c"
+#line 2022 "y.tab.c"
     break;
 
   case 60:
@@ -1987,25 +2026,25 @@ yyreduce:
                                {yyval = nontermnode(N_LOGIC_EXPR);yyval->child = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];
                                 yyval->op_code = yyvsp[-1]->type;
                                 }
-#line 1991 "parser.c"
+#line 2030 "y.tab.c"
     break;
 
   case 61:
 #line 265 "parser.y"
                   {yyval = yyvsp[0];}
-#line 1997 "parser.c"
+#line 2036 "y.tab.c"
     break;
 
   case 62:
 #line 267 "parser.y"
                {yyval = keynode(T_AND);}
-#line 2003 "parser.c"
+#line 2042 "y.tab.c"
     break;
 
   case 63:
 #line 268 "parser.y"
               {yyval = keynode(T_OR);}
-#line 2009 "parser.c"
+#line 2048 "y.tab.c"
     break;
 
   case 64:
@@ -2013,49 +2052,49 @@ yyreduce:
                                       {yyval = nontermnode(N_REL_EXPR); yyval->child = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];
                                         yyval->op_code = yyvsp[-1]->type;
                                       }
-#line 2017 "parser.c"
+#line 2056 "y.tab.c"
     break;
 
   case 65:
 #line 273 "parser.y"
                      {yyval = yyvsp[0];}
-#line 2023 "parser.c"
+#line 2062 "y.tab.c"
     break;
 
   case 66:
 #line 275 "parser.y"
            {yyval = keynode(T_EQ);}
-#line 2029 "parser.c"
+#line 2068 "y.tab.c"
     break;
 
   case 67:
 #line 276 "parser.y"
            {yyval = keynode(T_NE);}
-#line 2035 "parser.c"
+#line 2074 "y.tab.c"
     break;
 
   case 68:
 #line 277 "parser.y"
             {yyval = keynode(T_GT);}
-#line 2041 "parser.c"
+#line 2080 "y.tab.c"
     break;
 
   case 69:
 #line 278 "parser.y"
             {yyval = keynode(T_GE);}
-#line 2047 "parser.c"
+#line 2086 "y.tab.c"
     break;
 
   case 70:
 #line 279 "parser.y"
             {yyval = keynode(T_LT);}
-#line 2053 "parser.c"
+#line 2092 "y.tab.c"
     break;
 
   case 71:
 #line 280 "parser.y"
             {yyval = keynode(T_LE);}
-#line 2059 "parser.c"
+#line 2098 "y.tab.c"
     break;
 
   case 72:
@@ -2063,25 +2102,25 @@ yyreduce:
                                          {yyval = nontermnode(N_MATH_EXPR); yyval->child = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];
                                           yyval->op_code = yyvsp[-1]->type;
                                          }
-#line 2067 "parser.c"
+#line 2106 "y.tab.c"
     break;
 
   case 73:
 #line 285 "parser.y"
                     {yyval = yyvsp[0];}
-#line 2073 "parser.c"
+#line 2112 "y.tab.c"
     break;
 
   case 74:
 #line 287 "parser.y"
                    {yyval = keynode(T_PLUS);}
-#line 2079 "parser.c"
+#line 2118 "y.tab.c"
     break;
 
   case 75:
 #line 288 "parser.y"
                     {yyval = keynode(T_MINUS);}
-#line 2085 "parser.c"
+#line 2124 "y.tab.c"
     break;
 
   case 76:
@@ -2089,25 +2128,25 @@ yyreduce:
                                         {yyval = nontermnode(N_MATH_EXPR); yyval->child = yyvsp[-2]; yyvsp[-2]->brother = yyvsp[0];
                                           yyval->op_code = yyvsp[-1]->type;
                                         }
-#line 2093 "parser.c"
+#line 2132 "y.tab.c"
     break;
 
   case 77:
 #line 293 "parser.y"
                   {yyval = yyvsp[0];}
-#line 2099 "parser.c"
+#line 2138 "y.tab.c"
     break;
 
   case 78:
 #line 295 "parser.y"
                    {yyval = keynode(T_MUL);}
-#line 2105 "parser.c"
+#line 2144 "y.tab.c"
     break;
 
   case 79:
 #line 296 "parser.y"
                    {yyval = keynode(T_DIV);}
-#line 2111 "parser.c"
+#line 2150 "y.tab.c"
     break;
 
   case 80:
@@ -2115,37 +2154,37 @@ yyreduce:
                          {yyval = nontermnode(N_NEG_EXPR); yyval->child = yyvsp[0];
                           yyval->op_code = yyvsp[-1]->type;
                           }
-#line 2119 "parser.c"
+#line 2158 "y.tab.c"
     break;
 
   case 81:
 #line 303 "parser.y"
                       {yyval = yyvsp[-1];}
-#line 2125 "parser.c"
+#line 2164 "y.tab.c"
     break;
 
   case 82:
 #line 304 "parser.y"
             {yyval = idnode();}
-#line 2131 "parser.c"
+#line 2170 "y.tab.c"
     break;
 
   case 83:
 #line 305 "parser.y"
                {yyval = yyvsp[0];}
-#line 2137 "parser.c"
+#line 2176 "y.tab.c"
     break;
 
   case 84:
 #line 306 "parser.y"
                    {yyval = yyvsp[0];}
-#line 2143 "parser.c"
+#line 2182 "y.tab.c"
     break;
 
   case 85:
 #line 307 "parser.y"
                    {yyval = yyvsp[0];}
-#line 2149 "parser.c"
+#line 2188 "y.tab.c"
     break;
 
   case 86:
@@ -2153,89 +2192,89 @@ yyreduce:
                            {yyval = nontermnode(N_CASTING); yyval->child = yyvsp[-1];
                             yyval->op_code = yyvsp[-3]->type;
                            }
-#line 2157 "parser.c"
+#line 2196 "y.tab.c"
     break;
 
   case 87:
 #line 312 "parser.y"
                  {yyval = keynode(T_MINUS);}
-#line 2163 "parser.c"
+#line 2202 "y.tab.c"
     break;
 
   case 88:
 #line 313 "parser.y"
                {yyval = keynode(T_NOT);}
-#line 2169 "parser.c"
+#line 2208 "y.tab.c"
     break;
 
   case 89:
 #line 315 "parser.y"
                  {yyval = intconstnode();}
-#line 2175 "parser.c"
+#line 2214 "y.tab.c"
     break;
 
   case 90:
 #line 316 "parser.y"
                   {yyval = realconstnode();}
-#line 2181 "parser.c"
+#line 2220 "y.tab.c"
     break;
 
   case 91:
 #line 317 "parser.y"
                  {yyval = strconstnode();}
-#line 2187 "parser.c"
+#line 2226 "y.tab.c"
     break;
 
   case 92:
 #line 318 "parser.y"
                   {yyval = boolconstnode();}
-#line 2193 "parser.c"
+#line 2232 "y.tab.c"
     break;
 
   case 93:
 #line 320 "parser.y"
                {yyval = idnode();}
-#line 2199 "parser.c"
+#line 2238 "y.tab.c"
     break;
 
   case 94:
 #line 320 "parser.y"
                                                       {yyval = nontermnode(N_FUNC_CALL); yyval->child = yyvsp[-3]; yyvsp[-3]->brother = yyvsp[-1];}
-#line 2205 "parser.c"
+#line 2244 "y.tab.c"
     break;
 
   case 95:
 #line 322 "parser.y"
                           {yyval = nontermnode(N_EXPR_LIST); yyval->child = yyvsp[0];}
-#line 2211 "parser.c"
+#line 2250 "y.tab.c"
     break;
 
   case 96:
 #line 323 "parser.y"
                 {yyval = NULL;}
-#line 2217 "parser.c"
+#line 2256 "y.tab.c"
     break;
 
   case 97:
 #line 325 "parser.y"
                                             {yyval = nontermnode(N_COND_EXPR); yyval->child = yyvsp[-5]; yyvsp[-5]->brother = yyvsp[-3]; yyvsp[-3]->brother = yyvsp[-1];}
-#line 2223 "parser.c"
+#line 2262 "y.tab.c"
     break;
 
   case 98:
 #line 327 "parser.y"
                {yyval = keynode(T_INTEGER);}
-#line 2229 "parser.c"
+#line 2268 "y.tab.c"
     break;
 
   case 99:
 #line 328 "parser.y"
             {yyval = keynode(T_REAL);}
-#line 2235 "parser.c"
+#line 2274 "y.tab.c"
     break;
 
 
-#line 2239 "parser.c"
+#line 2278 "y.tab.c"
 
       default: break;
     }
@@ -2575,17 +2614,22 @@ int main(int argc, char **argv)
     int size;
     size = sub_prog10->num;
 
-    
     *tot_prog = appcode(makecode1(SIZ,size), make_psh_pop(0, count_var(symbol_table), get_func_entry_point(sub_prog10,"smain")));
     *tot_prog = appcode(*tot_prog, makecode(STP));
     *tot_prog = appcode(*tot_prog,*sub_prog10);
 
-    char *s_filename = strcat(argv[1],".sim");
-    //save_to_file(tot_prog, s_filename);
-    //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
+    printf("---- Correct Code: -----\n");
     codeprint(tot_prog);
 
-    executeSCode(*tot_prog);
+    char *s_filename = strcat(argv[1],".sim");
+    save_to_file(tot_prog, s_filename);
+
+    //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
+
+    printf("---- Test Code: -----\n");
+    get_scode_from_file(s_filename);
+
+    //executeSCode(*tot_prog);
   }
   
   return(result);

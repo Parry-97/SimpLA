@@ -70,7 +70,7 @@ void executeSCode(struct SCode prog)
     struct Ostack *next_stack;
     struct Ostack *current_stack;
 
-    struct Stat *scode = prog.first;
+    //struct Stat *scode = prog.first;
 
     current_mem = global_mem;
     current_stack = oroot;
@@ -652,7 +652,7 @@ void executeSCode(struct SCode prog)
     }
 }
 
-struct SCode get_scode_from_file(char *filename)
+void get_scode_from_file(char *filename)
 {
     FILE *fptr;
     struct SCode int_scode = endcode();
@@ -663,24 +663,37 @@ struct SCode get_scode_from_file(char *filename)
         // Program exits if the file pointer returns NULL.
         exit(-1);
     }
+    int prog_len;
+    fread(&prog_len, sizeof(int), 1, fptr);
 
-    fseek(fptr, 0, SEEK_END);
+
+    struct Stat *code_mem = (struct Stat *)calloc(sizeof(struct Stat), prog_len);
+
+    for (int i = 0; i < prog_len; i++) {
+        fread(&code_mem[i],sizeof(struct Stat), 1, fptr);
+    }
+
+    fclose(fptr);
+
+    for (int i = 0; i < prog_len; i++) {
+        printf("OP: %s \n",print_args(code_mem[i]));
+    }
+
+    /*fseek(fptr, 0, SEEK_END);
     unsigned long len = (unsigned long)ftell(fptr);
 
     if (len > 0)
     { //check if the file is empty or not.
         rewind(fptr);
-        struct Stat file_stat;
+        struct Stat *file_stat;
         while (!feof(fptr))
         {
-            fread(&file_stat, sizeof(struct Stat), 1, fptr);
-            printf("Op letta: %d\n", file_stat.op);
-            int_scode = appcode(int_scode, makecode_from_stat(file_stat));
+            file_stat = (struct Stat *)malloc(sizeof(struct Stat));
+            fread(file_stat, sizeof(struct Stat), 1, fptr);
+            printf("Op letta: %d\n", file_stat->op);
+            int_scode = appcode(int_scode, makecode_from_stat(*file_stat));
         }
-    }
-    printf("FILE READING OVER\n");
-    fclose(fptr);
-    return int_scode;
+    }*/
 }
 
 /*int main(int argc, char **argv)

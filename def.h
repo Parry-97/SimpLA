@@ -297,7 +297,8 @@ int conta_fratelli(Pnode fratello, int contatore),
     isAEmpty(struct Astack *root),
     isOEmpty(struct Ostack *root);
 
-char *get_format(symb_type txpe);
+char *get_format(symb_type txpe),
+     *print_args(struct Stat stat);
 
 void treeprint(Pnode, int),
     analizza(Pnode root, struct bucket symbtab[]),
@@ -319,12 +320,12 @@ void treeprint(Pnode, int),
     opush(struct Ostack *stack, Value val, int size),
     executeSCode(struct SCode prog),
     correct_breaks(struct SCode *prog),
-    correct_returns(struct SCode *prog);
+    correct_returns(struct SCode *prog),
+    get_scode_from_file(char *filename);
 
 struct SCode appcode(struct SCode code1, struct SCode code2),
     endcode(),
     makecode_from_stat(struct Stat stat),
-    get_scode_from_file(char *filename),
     concode(struct SCode code1, struct SCode code2, ...),
     makecode(Operator op),
     makecode1(Operator op, int arg),
