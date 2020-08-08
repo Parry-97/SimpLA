@@ -450,7 +450,7 @@ int main(int argc, char **argv)
     printf("---- Test Code: -----\n");
     get_scode_from_file(s_filename);
 
-    //executeSCode(*tot_prog);
+    executeSCode(*tot_prog);
   }
   
   return(result);
