@@ -52,25 +52,6 @@ char *codeops[] =
         "STP"};
 
 
-void save_to_file(struct SCode *prog, char *filename) {
-    FILE *fptr;
-    fptr = fopen(filename, "wb");
-
-    int num_stat = prog->num;
-    printf("Dimensione programma prog: %d\n", num_stat);
-    fwrite(&num_stat, sizeof(int), 1, fptr);
-
-    struct Stat *save_stat = prog->first;
-
-    for (int i = 0; i < num_stat; i++)
-    {
-        fwrite(save_stat, sizeof(struct Stat), 1, fptr);
-        save_stat = save_stat->next;
-    }
-    
-    fclose(fptr);
-}
-
 void codeprint(struct SCode *prog) {
     struct Stat *iter_stat = (struct Stat *)malloc(sizeof(struct Stat));
     

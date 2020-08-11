@@ -443,14 +443,14 @@ int main(int argc, char **argv)
     codeprint(tot_prog);
 
     char *s_filename = strcat(argv[1],".sim");
-    save_to_file(tot_prog, s_filename);
+    save_to_txt(tot_prog, s_filename);
 
     //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
 
     printf("---- Test Code: -----\n");
-    get_scode_from_file(s_filename);
+    //get_scode_from_file(s_filename);
 
-    executeSCode(*tot_prog);
+    //executeSCode(s_filename);
   }
   
   return(result);

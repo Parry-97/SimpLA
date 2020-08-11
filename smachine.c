@@ -13,7 +13,7 @@ struct data_mem *global_mem;
 
 char **string_table;
 
-void executeSCode(struct SCode prog)
+void executeSCode(char *filename)
 {
     string_table = (char **)calloc(sizeof(char *), SYMTAB_SIZE);
 
@@ -24,20 +24,20 @@ void executeSCode(struct SCode prog)
 
     char *read_format = (char *)malloc(sizeof(char) * 140);
 
-    struct Stat *code_mem = (struct Stat *)calloc(sizeof(struct Stat), prog.num);
-    struct Stat *code_stat = prog.first;
+    struct Stat *code_mem = get_scode_from_txt(filename);
+    //struct Stat *code_stat = prog.first;
 
     struct data_mem lod_data;
 
     int call_oid;
     int stat_counter = 0;
 
-    while (code_stat != NULL)
+    /*while (code_stat != NULL)
     {
         code_mem[stat_counter] = *code_stat;
         code_stat = code_stat->next;
         stat_counter++;
-    }
+    }*/
 
     int num1;
     int num2;
@@ -76,7 +76,7 @@ void executeSCode(struct SCode prog)
     current_stack = oroot;
     
 
-    for (int i = 0; i < prog.num && !end_of_program; i++)
+    for (int i = 0;!end_of_program; i++)
     {
         switch (code_mem[i].op)
         {
@@ -652,57 +652,17 @@ void executeSCode(struct SCode prog)
     }
 }
 
-void get_scode_from_file(char *filename)
-{
-    FILE *fptr;
-    struct SCode int_scode = endcode();
-
-    if ((fptr = fopen(filename, "rb")) == NULL)
-    {
-        fprintf(stderr,"ERRORE SIMPLAVM: FILE NON ESISTE!");
-        // Program exits if the file pointer returns NULL.
-        exit(-1);
-    }
-    int prog_len;
-    fread(&prog_len, sizeof(int), 1, fptr);
 
 
-    struct Stat *code_mem = (struct Stat *)calloc(sizeof(struct Stat), prog_len);
-
-    for (int i = 0; i < prog_len; i++) {
-        fread(&code_mem[i],sizeof(struct Stat), 1, fptr);
-    }
-
-    fclose(fptr);
-
-    for (int i = 0; i < prog_len; i++) {
-        printf("OP: %s \n",print_args(code_mem[i]));
-    }
-
-    /*fseek(fptr, 0, SEEK_END);
-    unsigned long len = (unsigned long)ftell(fptr);
-
-    if (len > 0)
-    { //check if the file is empty or not.
-        rewind(fptr);
-        struct Stat *file_stat;
-        while (!feof(fptr))
-        {
-            file_stat = (struct Stat *)malloc(sizeof(struct Stat));
-            fread(file_stat, sizeof(struct Stat), 1, fptr);
-            printf("Op letta: %d\n", file_stat->op);
-            int_scode = appcode(int_scode, makecode_from_stat(*file_stat));
-        }
-    }*/
-}
-
-/*int main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     struct SCode *scode = (struct SCode *)malloc(sizeof(struct SCode));
-
+    char *filename;
     if (argc >= 2)
     {
-        *scode = get_scode_from_file(argv[1]);
+        filename = (char *)malloc(sizeof(char) * (strlen(argv[1]) + 1));
+        strcpy(filename, argv[1]);
+        executeSCode(filename);
     }
     else
     {
@@ -710,7 +670,8 @@ void get_scode_from_file(char *filename)
         // Program exits if the file pointer returns NULL.
         exit(-1);
     }
-    printf("Starting  Code execution\n");
-    codeprint(scode);
-    executeSCode(*scode);
-}*/
+    //printf("Starting  Code execution\n");
+    //codeprint(scode);
+    //executeSCode(*scode);
+    return 0;
+}

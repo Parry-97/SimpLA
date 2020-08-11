@@ -318,10 +318,9 @@ void treeprint(Pnode, int),
     generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog),
     apush(struct Astack *stack, struct Ostack *objects, int call_oid, struct data_mem *local_mem ,int num_objs, int ret_addr),
     opush(struct Ostack *stack, Value val, int size),
-    executeSCode(struct SCode prog),
+    executeSCode(char *filename),
     correct_breaks(struct SCode *prog),
-    correct_returns(struct SCode *prog),
-    get_scode_from_file(char *filename);
+    correct_returns(struct SCode *prog);
 
 struct SCode appcode(struct SCode code1, struct SCode code2),
     endcode(),
@@ -340,6 +339,8 @@ struct SCode appcode(struct SCode code1, struct SCode code2),
 
 struct Stat *newstat(Operator op);
 
+struct Stat *get_scode_from_file(char *filename);
+
 struct Ostack_node newONode();
 
 struct Ostack_node opop(struct Ostack *ostack);
@@ -355,3 +356,11 @@ int isFull(struct Ostack *stack);
 struct Ostack_node newONode();
 struct Ostack_node opeek(struct Ostack *ostack);
 struct Astack_node apeek(struct Astack *astack);
+
+
+char *save_args(struct Stat stat);
+
+struct Stat *get_scode_from_txt(char *filename);
+
+void save_to_txt(struct SCode *prog, char *filename),
+     get_args_from_str(struct Stat *pStat, char *str_args);
