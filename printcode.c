@@ -52,21 +52,6 @@ char *codeops[] =
         "STP"};
 
 
-void save_to_file(struct SCode *prog, char *filename) {
-    FILE *fptr;
-    fptr = fopen(filename, "wb");
-
-    struct Stat *save_stat = prog->first;
-
-    for (int i = 0; i < prog->num; i++)
-    {
-        fwrite(save_stat, sizeof(struct Stat), 1, fptr);
-        save_stat = save_stat->next;
-    }
-    
-    fclose(fptr);
-}
-
 void codeprint(struct SCode *prog) {
     struct Stat *iter_stat = (struct Stat *)malloc(sizeof(struct Stat));
     
@@ -76,7 +61,7 @@ void codeprint(struct SCode *prog) {
     
     while(iter_stat != NULL)
     {
-        printf("%s %s\n", codeops[iter_stat->op] , print_args(*iter_stat));
+        printf("%s\n",print_args(*iter_stat));
         iter_stat = iter_stat->next;
     }
     
@@ -84,76 +69,76 @@ void codeprint(struct SCode *prog) {
 
 char * print_args(struct Stat stat) {
 
-    char * str_args = (char*)malloc(280*sizeof(char));
+    char * str_args = (char*)malloc(512*sizeof(char));
     
     switch (stat.op)
     {
     case VARI: 
-        sprintf(str_args, "%d",stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op],stat.args[0].ival);
         break;
 
     case LCI:
-        sprintf(str_args, "%d", stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op], stat.args[0].ival);
         break;
 
     case LCR:
-        sprintf(str_args, "%f", stat.args[0].fval);
+        sprintf(str_args, "%s %f",codeops[stat.op], stat.args[0].fval);
         break;
 
     case LCS:
         //printf("Inizio LCS\n");
-        sprintf(str_args, "%s", stat.args[0].sval);
+        sprintf(str_args, "%s %s",codeops[stat.op], stat.args[0].sval);
         break;
 
     case LOD:
-        sprintf(str_args, "%d %d", stat.args[0].ival, stat.args[1].ival);
+        sprintf(str_args, "%s %d %d",codeops[stat.op], stat.args[0].ival, stat.args[1].ival);
         break;
 
     case STO:
-        sprintf(str_args, "%d %d", stat.args[0].ival, stat.args[1].ival);
+        sprintf(str_args, "%s %d %d",codeops[stat.op], stat.args[0].ival, stat.args[1].ival);
         break;
 
     case JMF:
-        sprintf(str_args, "%d", stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op], stat.args[0].ival);
         break;
 
     case JMP:
-        sprintf(str_args, "%d", stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op], stat.args[0].ival);
         break;
 
     case PSH:
-        sprintf(str_args, "%d %d", stat.args[0].ival, stat.args[1].ival);
+        sprintf(str_args, "%s %d %d",codeops[stat.op], stat.args[0].ival, stat.args[1].ival);
         break;
 
     case GOT:
-        sprintf(str_args, "%d", stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op], stat.args[0].ival);
         break;
 
     case INP:
-        sprintf(str_args, "%s %d %d", stat.args[0].sval, stat.args[1].ival, stat.args[2].ival);
+        sprintf(str_args, "%s %s %d %d",codeops[stat.op], stat.args[0].sval, stat.args[1].ival, stat.args[2].ival);
         break;
 
     case OUT:
-        sprintf(str_args, "%d %s", stat.args[0].ival, stat.args[1].sval);
+        sprintf(str_args, "%s %d %s",codeops[stat.op], stat.args[0].ival, stat.args[1].sval);
         break;
 
     case ENT:
-        sprintf(str_args, "%d", stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op], stat.args[0].ival);
         break;
 
     case INC:
-        sprintf(str_args, "%d %d", stat.args[0].ival, stat.args[1].ival);
+        sprintf(str_args, "%s %d %d", codeops[stat.op], stat.args[0].ival, stat.args[1].ival);
         break;
 
     case RET:
-        sprintf(str_args, "%d", stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op], stat.args[0].ival);
         break;
 
     case SIZ:
-        sprintf(str_args, "%d", stat.args[0].ival);
+        sprintf(str_args, "%s %d",codeops[stat.op],stat.args[0].ival);
         break;
 
-    default: return "";
+    default: sprintf(str_args,"%s",codeops[stat.op]);
         break;
     }
 

@@ -435,17 +435,22 @@ int main(int argc, char **argv)
     int size;
     size = sub_prog10->num;
 
-    
     *tot_prog = appcode(makecode1(SIZ,size), make_psh_pop(0, count_var(symbol_table), get_func_entry_point(sub_prog10,"smain")));
     *tot_prog = appcode(*tot_prog, makecode(STP));
     *tot_prog = appcode(*tot_prog,*sub_prog10);
 
-    char *s_filename = strcat(argv[1],".sim");
-    //save_to_file(tot_prog, s_filename);
-    //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
+    printf("---- Correct Code: -----\n");
     codeprint(tot_prog);
 
-    executeSCode(*tot_prog);
+    char *s_filename = strcat(argv[1],".sim");
+    save_to_txt(tot_prog, s_filename);
+
+    //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
+
+    printf("---- Test Code: -----\n");
+    //get_scode_from_file(s_filename);
+
+    //executeSCode(s_filename);
   }
   
   return(result);
