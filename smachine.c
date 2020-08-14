@@ -464,20 +464,26 @@ void executeSCode(char *filename)
             }
             else if (strcmp(code_mem[i].args[0].sval, "s") == 0)
             {
+                //TODO: DONE
                 char *str = (char *)malloc(sizeof(char) * 200);
-                fflush(stdin);
-                scanf("%s", str);
+                fgets(str,200,stdin);
+                char *str2 = (char *)malloc(strlen(str) - 1);
+                //scanf("%s", str);
 
-                if (string_table[hash(str)] != NULL)
+                for (int j = 0; j < strlen(str) - 1; j++) {
+                    str2[j] = str[j];
+                }
+
+                if (string_table[hash(str2)] != NULL)
                 {
                     /* code */
-                    str = string_table[hash(str)];
+                    str2 = string_table[hash(str2)];
                 }
                 else
                 {
-                    string_table[hash(str)] = str;
+                    string_table[hash(str2)] = str2;
                 }
-                read_value.sval = str;
+                read_value.sval = str2;
             }
             else if (strcmp(code_mem[i].args[0].sval, "b") == 0)
             {

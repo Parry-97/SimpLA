@@ -142,6 +142,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
         analizza_id(root, symbtab);
     }
+    //TODO: Rivedere/Sostituire il Flag...FALLACE
     else if (root->type == T_BREAK)
     {
         if (!is_loop)
@@ -352,7 +353,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             break;
 
         case N_WHILE_STAT:
-            is_loop = 1;
+            is_loop++;
             analizza(root->child, symbtab);
             if (root->child->sem_type != S_BOOLEAN_)
             {
@@ -360,11 +361,11 @@ void analizza(Pnode root, struct bucket symbtab[])
                 exit(-1);
             }
             analizza(root->child->brother, symbtab);
-            is_loop = 0;
+            is_loop--;
             break;
 
         case N_FOR_STAT:
-            is_loop = 1;
+            is_loop++;
             bc = find_index_in_env(root->child->value.sval, symbtab);
             
             if (bc->classe == FUN)
@@ -391,7 +392,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             }
             find_index_in_statlist(root->child->value.sval, root->child->brother->brother->brother->child);
             analizza(root->child->brother->brother->brother, symbtab);
-            is_loop = 0;
+            is_loop--;
             break;
 
         case N_RETURN_STAT:
