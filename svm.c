@@ -6,23 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-void save_to_file(struct SCode *prog, char *filename) {
-    FILE *fptr;
-    fptr = fopen(filename, "wb");
-
-    int num_stat = prog->num;
-    printf("Dimensione programma prog: %d\n", num_stat);
-    fwrite(&num_stat, sizeof(int), 1, fptr);
-
-    struct Stat *save_stat = prog->first;
-    for (int i = 0; i < num_stat; i++)
-    {
-        fwrite(save_stat, sizeof(struct Stat), 1, fptr);
-        save_stat = save_stat->next;
-    }
-
-    fclose(fptr);
-}
 
 void save_to_txt(struct SCode *prog, char *filename) {
     FILE *fptr;
@@ -60,7 +43,6 @@ char *save_args(struct Stat stat) {
             break;
 
         case LCS:
-            //printf("Inizio LCS\n");
             sprintf(str_args, "%s",stat.args[0].sval);
             break;
 
@@ -124,12 +106,10 @@ struct Stat *get_scode_from_txt(char *filename)
     if ((fptr = fopen(filename, "r")) == NULL)
     {
         fprintf(stderr,"ERRORE SIMPLAVM: FILE NON ESISTE!");
-        // Program exits if the file pointer returns NULL.
         exit(-1);
     }
     int prog_len;
     fscanf(fptr,"%d\n", &prog_len);
-    //printf("DIM PROG: %d\n", prog_len);
 
     char *str_args = malloc(sizeof(char) * 512);
     struct Stat *code_mem = (struct Stat *)calloc(prog_len, sizeof(struct Stat));
@@ -139,10 +119,6 @@ struct Stat *get_scode_from_txt(char *filename)
         get_args_from_str(&code_mem[i],fgets(str_args,512,fptr));
     }
 
-    /*for (int i = 0; i < prog_len; i++) {
-        printf("OP: %s \n",print_args(code_mem[i]));
-    }*/
-
     fclose(fptr);
 
 
@@ -151,7 +127,6 @@ struct Stat *get_scode_from_txt(char *filename)
 }
 
 void get_args_from_str(struct Stat *stat, char *str_args) {
-    //printf("ARGS: %s\n", str_args);
     switch (stat->op)
     {
         case VARI:
@@ -167,7 +142,6 @@ void get_args_from_str(struct Stat *stat, char *str_args) {
             break;
 
         case LCS:
-            //printf("stringa param: %s\n",str_args);
             stat->args[0].sval = malloc(sizeof(char) * (strlen(str_args) - 1));
 
             int j = 0;
@@ -175,7 +149,6 @@ void get_args_from_str(struct Stat *stat, char *str_args) {
                 stat->args[0].sval[j] = str_args[i];
                 j++;
             }
-            //strcpy(stat->args[0].sval,str_args);
             break;
 
         case LOD:
@@ -205,14 +178,11 @@ void get_args_from_str(struct Stat *stat, char *str_args) {
         case INP:
             stat->args[0].sval = malloc(sizeof(char) * 128);
             sscanf(str_args,"%s %d %d",stat->args[0].sval,&stat->args[1].ival,&stat->args[2].ival);
-            //printf("%s\n",stat->args[0].sval);
             break;
 
         case OUT:
-            //printf("stringa param: %s\n",str_args);
             stat->args[1].sval = malloc(sizeof(char) * 128);
             sscanf(str_args,"%d %s",&stat->args[0].ival,stat->args[1].sval);
-            //printf("%s\n",stat->args[1].sval);
             break;
 
         case ENT:
@@ -234,48 +204,4 @@ void get_args_from_str(struct Stat *stat, char *str_args) {
         default:
             break;
     }
-}
-
-struct Stat *get_scode_from_file(char *filename)
-{
-    FILE *fptr;
-    //struct SCode int_scode = endcode();
-
-    if ((fptr = fopen(filename, "rb")) == NULL)
-    {
-        fprintf(stderr,"ERRORE SIMPLAVM: FILE NON ESISTE!");
-        // Program exits if the file pointer returns NULL.
-        exit(-1);
-    }
-    int prog_len;
-    fread(&prog_len, sizeof(int), 1, fptr);
-    //printf("Prog _len : %d\n",prog_len);
-
-    struct Stat *code_mem = (struct Stat *)calloc(prog_len, sizeof(struct Stat));
-
-    for (int i = 0; i < prog_len; i++) {
-        fread(&code_mem[i],sizeof(struct Stat), 1, fptr);
-    }
-
-    fclose(fptr);
-
-    /*for (int i = 0; i < prog_len; i++) {
-        printf("OP: %s \n",print_args(code_mem[i]));
-    }*/
-    /*fseek(fptr, 0, SEEK_END);
-    unsigned long len = (unsigned long)ftell(fptr);
-
-    if (len > 0)
-    { //check if the file is empty or not.
-        rewind(fptr);
-        struct Stat *file_stat;
-        while (!feof(fptr))
-        {
-            file_stat = (struct Stat *)malloc(sizeof(struct Stat));
-            fread(file_stat, sizeof(struct Stat), 1, fptr);
-            printf("Op letta: %d\n", file_stat->op);
-            int_scode = appcode(int_scode, makecode_from_stat(*file_stat));
-        }
-    }*/
-    return code_mem;
 }

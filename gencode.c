@@ -12,7 +12,6 @@ int is_break = 0;
 int is_return = 0;
 Pnode expr_list;
 
-//CONTROLLARE IS_RHS
 void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 {
 
