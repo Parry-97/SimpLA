@@ -398,7 +398,7 @@ void executeSCode(char *filename)
 
             struct Ostack *param_stack = createOStack(100);
             struct Ostack_node param;
-            ;
+
 
             for (int j = 0; j < v1.ival; j++)
             {
@@ -441,6 +441,8 @@ void executeSCode(char *filename)
                 int ivalue;
                 fflush(stdin);
                 scanf("%d", &ivalue);
+                getchar();
+                fflush(stdin);
                 read_value.ival = ivalue;
             }
             else if (strcmp(code_mem[i].args[0].sval, "r") == 0)
@@ -448,18 +450,26 @@ void executeSCode(char *filename)
                 fflush(stdin);
                 float fvalue;
                 scanf("%f", &fvalue);
+                getchar();
+                fflush(stdin);
                 read_value.fval = fvalue;
             }
             else if (strcmp(code_mem[i].args[0].sval, "s") == 0)
             {
                 char *str = (char *)malloc(sizeof(char) * 200);
+                fflush(stdin);
                 fgets(str,200,stdin);
-                char *str2 = (char *)malloc(strlen(str) - 1);
-
-                for (int j = 0; j < strlen(str) - 1; j++) {
+                fflush(stdin);
+                //printf("ACTUAlly READ STRING: %s with length %lu\n",str, strlen(str));
+                //printf("Read String: %s\n", str);
+                char *str2 = malloc(sizeof(char) * (strlen(str)));
+                //TODO: Rivedere
+                int j;
+                for (j = 0; str[j] != '\n'; j++) {
                     str2[j] = str[j];
                 }
 
+                str2[j] = '\0';
                 if (string_table[hash(str2)] != NULL)
                 {
                     /* code */
@@ -469,6 +479,7 @@ void executeSCode(char *filename)
                 {
                     string_table[hash(str2)] = str2;
                 }
+                //printf("READ STRING: %s\n", str2);
                 read_value.sval = str2;
             }
             else if (strcmp(code_mem[i].args[0].sval, "b") == 0)
@@ -476,6 +487,9 @@ void executeSCode(char *filename)
                 int bvalue;
                 fflush(stdin);
                 scanf("%d", &bvalue);
+                getchar();
+                fflush(stdin);
+
                 read_value.ival = bvalue;
             }
             else
