@@ -1,0 +1,26 @@
+s: string;
+i:integer;
+
+func funzione(str: string, num: integer): void
+j:integer;
+body
+    if str < "ciao" then
+        writeln("ok");
+    else
+        writeln(str);
+    end;
+
+    for j = 0 to num do
+        write(j);
+    end;
+end;
+
+body
+    write("leggi un intero ");
+    read(i);
+    writeln("");
+    write("leggi una stringa ");
+    read(s);
+    funzione(s,i);
+end.
+

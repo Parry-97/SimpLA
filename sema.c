@@ -142,7 +142,6 @@ void analizza(Pnode root, struct bucket symbtab[])
 
         analizza_id(root, symbtab);
     }
-    //TODO: Rivedere/Sostituire il Flag...FALLACE
     else if (root->type == T_BREAK)
     {
         if (!is_loop)

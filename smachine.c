@@ -259,13 +259,13 @@ void executeSCode(char *filename)
 
             opush(current_stack, ris, get_type_size(T_REAL));
             break;
-
+        //TODO: Rivedere confronto tra stringhe..DONE
         case GTS:
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) > 0 ? 1 : 0;
-
+            ris.bval = strcmp(s2,s1) > 0 ? 1 : 0;
+            //printf("GTS: %s < %s : %d\n", s1,s2,strcmp(s1,s2));
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -273,7 +273,9 @@ void executeSCode(char *filename)
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) >= 0 ? 1 : 0;
+            ris.bval = strcmp(s2, s1) >= 0 ? 1 : 0;
+
+            //printf("GES: %s >= %s : %d\n", s1,s2,strcmp(s1,s2));
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -281,8 +283,8 @@ void executeSCode(char *filename)
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) < 0 ? 1 : 0;
-
+            ris.bval = strcmp(s2,s1) < 0 ? 1 : 0;
+            //printf("GES: %s < %s : %d\n", s1,s2,strcmp(s1,s2));
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -290,7 +292,9 @@ void executeSCode(char *filename)
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) <= 0 ? 1 : 0;
+            ris.bval = strcmp(s2,s1) <= 0 ? 1 : 0;
+
+            //printf("GES: %s <= %s : %d\n", s1,s2,strcmp(s1,s2));
 
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
@@ -460,8 +464,6 @@ void executeSCode(char *filename)
                 fflush(stdin);
                 fgets(str,200,stdin);
                 fflush(stdin);
-                //printf("ACTUAlly READ STRING: %s with length %lu\n",str, strlen(str));
-                //printf("Read String: %s\n", str);
                 char *str2 = malloc(sizeof(char) * (strlen(str)));
                 //TODO: Rivedere
                 int j;

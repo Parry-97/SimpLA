@@ -263,6 +263,7 @@ struct Astack_node
 };
 
 char *newstring(char *),
+     *remove_quotes(char *),
      *print_args(struct Stat stat);
 
 int yylex(),
