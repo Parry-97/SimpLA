@@ -307,7 +307,14 @@ void analizza(Pnode root, struct bucket symbtab[])
                 fprintf(stderr, "ERRORE: CASTING ERRATO\n");
                 exit(-1);
             }
-
+            if (root->child->sem_type == S_INTEGER && root->op_code == T_INTEGER) {
+                fprintf(stderr, "ERRORE: CASTING SUPERFLUO\n");
+                exit(-1);
+            }
+            if (root->child->sem_type == S_REAL && root->op_code == T_REAL) {
+                fprintf(stderr, "ERRORE: CASTING SUPERFLUO\n");
+                exit(-1);
+            }
             root->sem_type = root->op_code == T_INTEGER ? S_INTEGER : S_REAL;
             break;
 

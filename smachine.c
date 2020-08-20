@@ -16,7 +16,7 @@ char **string_table;
 void executeSCode(char *filename)
 {
     //todo: aggiungere bucket horizontali per evitare collisioni
-    string_table = (char **)calloc((SYMTAB_SIZE + 1), sizeof(char *));
+    string_table = (char **)calloc((SYMTAB_SIZE), sizeof(char *));
 
     char *format = (char *)malloc(sizeof(char) * 100);
 
