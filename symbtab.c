@@ -170,7 +170,7 @@ int hash(const char *id)
     int h = 0, i;
     for (i = 0; id[i] != '\0'; i++)
         h = ((h << SHIFT) + id[i]) % (SYMTAB_SIZE - 1);
-    return h;
+    return abs(h);
 }
 
 struct bucket *init_bucket()

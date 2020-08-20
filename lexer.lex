@@ -88,7 +88,7 @@ char *remove_quotes(char *s) {
         j++;
     }
     clean[i] = '\0';
-    printf("string without quotes: %s\n", clean);
+    //printf("string without quotes: %s\n", clean);
 
     return clean;
 }

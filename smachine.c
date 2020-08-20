@@ -15,7 +15,8 @@ char **string_table;
 
 void executeSCode(char *filename)
 {
-    string_table = (char **)calloc(sizeof(char *), SYMTAB_SIZE);
+    //todo: aggiungere bucket horizontali per evitare collisioni
+    string_table = (char **)calloc((SYMTAB_SIZE + 1), sizeof(char *));
 
     char *format = (char *)malloc(sizeof(char) * 100);
 
@@ -259,7 +260,6 @@ void executeSCode(char *filename)
 
             opush(current_stack, ris, get_type_size(T_REAL));
             break;
-        //TODO: Rivedere confronto tra stringhe..DONE
         case GTS:
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;

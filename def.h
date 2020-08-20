@@ -4,7 +4,7 @@
 
 #define SHIFT 4
 #define MAXARGS 3
-#define SYMTAB_SIZE 100
+#define SYMTAB_SIZE 2999
 
 struct bucket *symbol_table;
 struct SCode *tot_prog;
