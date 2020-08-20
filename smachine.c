@@ -438,25 +438,24 @@ void executeSCode(char *filename)
 
         case INP:
             fflush(stdin);
-            char *read_string = (char *)malloc(sizeof(char) * 200);
+            char *read_string = (char *)malloc(sizeof(char) * 256);
             if (strcmp(code_mem[i].args[0].sval, "i") == 0)
             {
 
                 int ivalue;
                 fflush(stdin);
-                scanf("%d", &ivalue);
-                getchar();
+                fgets(read_string,256,stdin);
+                //getchar();
                 fflush(stdin);
-                read_value.ival = ivalue;
+                read_value.ival = atoi(read_string);
             }
             else if (strcmp(code_mem[i].args[0].sval, "r") == 0)
             {
-                fflush(stdin);
                 float fvalue;
-                scanf("%f", &fvalue);
-                getchar();
                 fflush(stdin);
-                read_value.fval = fvalue;
+                fgets(read_string,256,stdin);
+                fflush(stdin);
+                read_value.fval = atof(read_string);
             }
             else if (strcmp(code_mem[i].args[0].sval, "s") == 0)
             {
@@ -486,13 +485,15 @@ void executeSCode(char *filename)
             }
             else if (strcmp(code_mem[i].args[0].sval, "b") == 0)
             {
+                //todo:fixme->numero deve essere compreso 0 o 1..o stringa;
                 int bvalue;
                 fflush(stdin);
-                scanf("%d", &bvalue);
-                getchar();
+                fgets(read_string,256,stdin);
+                //getchar();
                 fflush(stdin);
+                bvalue = atoi(read_string);
 
-                read_value.ival = bvalue;
+                read_value.bval = bvalue > 0 ? TRUE:FALSE;
             }
             else
             {
@@ -536,8 +537,8 @@ void executeSCode(char *filename)
                 }
                 else if (format[j] == 'b')
                 {
-
-                    printf("%d", v.bval);
+                    //todo: fix->print stringa
+                    printf("%s", v.bval == TRUE?"true":"false");
                 }
                 else if (format[j] == 'r')
                 {

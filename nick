@@ -1,5 +1,5 @@
 s: string;
-i:integer;
+i:boolean;
 
 func funzione(str: string, num: integer): void
 j:integer;
@@ -16,11 +16,11 @@ body
 end;
 
 body
-    write("leggi un intero ");
-    read(i);
-    writeln("");
     write("leggi una stringa ");
     read(s);
-    funzione(s,i);
+    write("leggi un boolean ");
+        read(i);
+        writeln("i: ",i);
+    funzione(s,13);
 end.
 
