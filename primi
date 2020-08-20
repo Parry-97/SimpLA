@@ -25,6 +25,6 @@ body
     for j = 0 to 4 do
         write("Inserire numero di cui sapere se primo: ");
         read(k);
-        writeln("il numero ", k ," è primo?: ", if isprime(k) then "true" else "false" end);
+        writeln("il numero ", k ," è primo?: ", if isprime(k) then "vero" else "falso" end);
     end;    
 end.
