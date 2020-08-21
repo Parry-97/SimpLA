@@ -15,7 +15,6 @@ char **string_table;
 
 void executeSCode(char *filename)
 {
-    //todo: aggiungere bucket horizontali per evitare collisioni
     string_table = (char **)calloc((SYMTAB_SIZE), sizeof(char *));
 
     char *format = (char *)malloc(sizeof(char) * 100);
@@ -265,7 +264,6 @@ void executeSCode(char *filename)
             s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s2,s1) > 0 ? 1 : 0;
-            //printf("GTS: %s < %s : %d\n", s1,s2,strcmp(s1,s2));
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -275,7 +273,6 @@ void executeSCode(char *filename)
 
             ris.bval = strcmp(s2, s1) >= 0 ? 1 : 0;
 
-            //printf("GES: %s >= %s : %d\n", s1,s2,strcmp(s1,s2));
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -284,7 +281,6 @@ void executeSCode(char *filename)
             s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s2,s1) < 0 ? 1 : 0;
-            //printf("GES: %s < %s : %d\n", s1,s2,strcmp(s1,s2));
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -293,8 +289,6 @@ void executeSCode(char *filename)
             s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s2,s1) <= 0 ? 1 : 0;
-
-            //printf("GES: %s <= %s : %d\n", s1,s2,strcmp(s1,s2));
 
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
@@ -464,7 +458,7 @@ void executeSCode(char *filename)
                 fgets(str,200,stdin);
                 fflush(stdin);
                 char *str2 = malloc(sizeof(char) * (strlen(str)));
-                //TODO: Rivedere
+
                 int j;
                 for (j = 0; str[j] != '\n'; j++) {
                     str2[j] = str[j];
@@ -480,12 +474,11 @@ void executeSCode(char *filename)
                 {
                     string_table[hash(str2)] = str2;
                 }
-                //printf("READ STRING: %s\n", str2);
                 read_value.sval = str2;
             }
             else if (strcmp(code_mem[i].args[0].sval, "b") == 0)
             {
-                //todo:fixme->numero deve essere compreso 0 o 1..o stringa;
+
                 int bvalue;
                 fflush(stdin);
                 fgets(read_string,256,stdin);
@@ -537,7 +530,6 @@ void executeSCode(char *filename)
                 }
                 else if (format[j] == 'b')
                 {
-                    //todo: fix->print stringa
                     printf("%s", v.bval == TRUE?"true":"false");
                 }
                 else if (format[j] == 'r')

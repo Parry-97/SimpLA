@@ -145,7 +145,7 @@ void get_args_from_str(struct Stat *stat, char *str_args) {
 
             stat->args[0].sval = malloc(sizeof(char) * (strlen(str_args) - 1));
 
-            //TODO: Rivedere perche potrebbe triggerare come nel INP di smachine.c
+
             int j = 0;
             for (int i = 1; i < strlen(str_args) - 1; i++) {
                 stat->args[0].sval[j] = str_args[i];

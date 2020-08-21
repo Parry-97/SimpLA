@@ -77,7 +77,7 @@ char *newstring(char *s)
   strcpy(p, s);
   return(p);
 }
-//TODO: RIvedere
+
 char *remove_quotes(char *s) {
     char *clean;
     clean = (char *)malloc(sizeof(char) * strlen(s));
@@ -88,7 +88,5 @@ char *remove_quotes(char *s) {
         j++;
     }
     clean[i] = '\0';
-    //printf("string without quotes: %s\n", clean);
-
     return clean;
 }
