@@ -632,11 +632,17 @@ int main(int argc, char **argv)
     {
         filename = (char *)malloc(sizeof(char) * (strlen(argv[1]) + 1));
         strcpy(filename, argv[1]);
+
+        if(strstr(filename, ".sim") == NULL) {
+            fprintf(stderr,"ERRORE SIMPLAVM: INDICARE FILE.SIM DA ESEGUIRE\n");
+            exit(-1);
+        }
+
         executeSCode(filename);
     }
     else
     {
-        fprintf(stderr,"ERRORE SIMPLAVM: INDICARE FILE.SIM DA ESEGUIRE");
+        fprintf(stderr,"ERRORE SIMPLAVM: INDICARE FILE.SIM DA ESEGUIRE\n");
         exit(-1);
     }
     return 0;

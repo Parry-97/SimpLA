@@ -54,8 +54,7 @@ char *codeops[] =
 
 void codeprint(struct SCode *prog) {
     struct Stat *iter_stat = (struct Stat *)malloc(sizeof(struct Stat));
-    
-    //printf("Start Codeprint\n");
+
     iter_stat = prog->first;
     
     while(iter_stat != NULL)

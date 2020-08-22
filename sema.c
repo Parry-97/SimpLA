@@ -415,7 +415,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (return_type != root->sem_type)
             {
-                fprintf(stderr, "RETURN NON CORRETTO\n");
+                fprintf(stderr, "ERRORE:RETURN NON CORRETTO\n");
                 exit(-1);
             }
             break;
