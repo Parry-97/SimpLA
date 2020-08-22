@@ -319,7 +319,6 @@ void analizza(Pnode root, struct bucket symbtab[])
             break;
 
         case N_ASSIGN_STAT:
-
             bc_2 = find_index_in_env(root->child->value.sval, symbtab);
 
             if (bc_2->classe == FUN)
@@ -347,13 +346,13 @@ void analizza(Pnode root, struct bucket symbtab[])
                 fprintf(stderr, "ERRORE: IF NON CORRETTO\n");
                 exit(-1);
             }
-            analizza(root->child->brother->child, symbtab);
+            analizza(root->child->brother, symbtab);
 
 
             if (root->child->brother->brother != NULL)
             {
                 /* code */
-                analizza(root->child->brother->brother->child, symbtab);
+                analizza(root->child->brother->brother, symbtab);
             }
 
             break;
@@ -402,7 +401,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             break;
 
         case N_RETURN_STAT:
-
+            printf("IN RETURN DI SEMA\n");
             if (root->child == NULL)
             {
                 root->sem_type = S_VOID_;
@@ -455,9 +454,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 {
                     /* code */
                     return_type = S_VOID_;
-
                 }
-                
             }
             break;
         }
