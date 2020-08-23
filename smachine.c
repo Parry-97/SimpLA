@@ -57,8 +57,8 @@ void executeSCode(char *filename)
 
     struct data_mem *current_mem;
 
-    aroot = createAStack(256);
-    oroot = createOStack(256);
+    aroot = createAStack(512);
+    oroot = createOStack(512);
 
     struct Ostack *next_stack;
     struct Ostack *current_stack;
