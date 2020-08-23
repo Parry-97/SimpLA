@@ -439,7 +439,6 @@ void executeSCode(char *filename)
                 int ivalue;
                 fflush(stdin);
                 fgets(read_string,256,stdin);
-                //getchar();
                 fflush(stdin);
                 read_value.ival = atoi(read_string);
             }
@@ -482,7 +481,6 @@ void executeSCode(char *filename)
                 int bvalue;
                 fflush(stdin);
                 fgets(read_string,256,stdin);
-                //getchar();
                 fflush(stdin);
                 bvalue = atoi(read_string);
 

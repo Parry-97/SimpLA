@@ -1,6 +1,3 @@
-//
-// Created by Parampal on 10/08/2020.
-//
 #include "def.h"
 #include <stdlib.h>
 #include <stdio.h>

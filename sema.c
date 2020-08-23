@@ -401,7 +401,6 @@ void analizza(Pnode root, struct bucket symbtab[])
             break;
 
         case N_RETURN_STAT:
-            printf("IN RETURN DI SEMA\n");
             if (root->child == NULL)
             {
                 root->sem_type = S_VOID_;

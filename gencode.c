@@ -460,7 +460,6 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
                 while (count_bro != NULL)
                 {
-                    /* code */
                     generateCode(count_bro, symbtab, prog);
                     count_bro = count_bro->brother;
                 }
@@ -917,7 +916,8 @@ char *get_format(symb_type txpe)
         break;
 
     default:
-        break;
+        fprintf(stderr,"ERRORE: NON è POSSIBILE STAMPARE DATI VOID\n");
+        exit(-1);
     }
 }
 
