@@ -9,7 +9,6 @@ void save_to_txt(struct SCode *prog, char *filename) {
     fptr = fopen(filename, "w");
 
     int num_stat = prog->num;
-    printf("Dimensione programma prog: %d\n", num_stat);
     fprintf(fptr,"%d\n", num_stat);
 
     struct Stat *save_stat = prog->first;
