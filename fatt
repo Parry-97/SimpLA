@@ -15,14 +15,14 @@ func stampaFattoriali(tot: integer): void
 	i, f: integer;
 body
 	f = fattoriale(tot);
-	writeln("Il fattoriale di ", tot, "� ", f);
+	writeln("Il fattoriale di ", tot, " è ", f);
 end;
 
 body
 	write("Inserisci numero ");
 	read(numero);
 	if numero < 0 then
-		writeln("Il numero ", numero, "non � valido");
+		writeln("Il numero ", numero, "non è valido");
 	else
 		stampaFattoriali(numero);
 	end;

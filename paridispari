@@ -40,7 +40,7 @@ body
     while bul do
         write("Inserisci un numero per verificare la parità: ");
         read(n);
-        writeln("Il numero ", n , "indicato è pari?: ", if smistanumeri(n) then "true" else "false" end);
+        writeln("Il numero ", n , " indicato è pari?: ", if smistanumeri(n) then "vero" else "falso" end);
         writeln("Si desidera proseguire ?[1,0]: ");
         read(bul);
     end;

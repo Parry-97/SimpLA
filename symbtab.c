@@ -170,7 +170,7 @@ int hash(const char *id)
     int h = 0, i;
     for (i = 0; id[i] != '\0'; i++)
         h = ((h << SHIFT) + id[i]) % (SYMTAB_SIZE - 1);
-    return h;
+    return abs(h);
 }
 
 struct bucket *init_bucket()
@@ -190,7 +190,7 @@ void insert_by_ID(char *id, struct bucket symbtab[])
     }
     else if (strcmp(symbtab[hash(id)].nome, id) == 0)
     {
-        fprintf(stderr, "ERRORE::ID GIA PRESENTE");
+        fprintf(stderr, "ERRORE::ID %s GIA PRESENTE\n",id);
         exit(-1);
     }
     else if (symbtab[hash(id)].next == NULL)
@@ -215,7 +215,7 @@ void insert(char *id, symb_class classe, symb_type tipo, struct bucket symbtab[]
     }
     else if (strcmp(symbtab[hash(id)].nome, id) == 0)
     {
-        fprintf(stderr, "ERRORE::ID GIA PRESENTE");
+        fprintf(stderr, "ERRORE::ID %s GIA PRESENTE\n", id);
         exit(-1);
     }
     else if (symbtab[hash(id)].next == NULL)
@@ -245,7 +245,7 @@ void insert_func(char *id, symb_type tipo, struct param_formali formali, struct 
     }
     else if (strcmp(symbtab[hash(id)].nome, id) == 0)
     {
-        fprintf(stderr, "ERRORE::ID GIA PRESENTE");
+        fprintf(stderr, "ERRORE::ID %s GIA PRESENTE\n",id);
         exit(-1);
     }
     else if (symbtab[hash(id)].next == NULL)
@@ -268,7 +268,7 @@ void add_func_in_chain_args(char *id, symb_type tipo, struct param_formali forma
 {
     if (strcmp(bc->nome, id) == 0)
     {
-        fprintf(stderr, "ERRORE::ID GIA PRESENTE");
+        fprintf(stderr, "ERRORE::ID %s GIA PRESENTE\n", id);
         exit(-1);
     }
 
@@ -292,7 +292,7 @@ void add_in_chain_args(char *id, symb_class classe, symb_type tipo, struct bucke
 {
     if (strcmp(bc->nome, id) == 0)
     {
-        fprintf(stderr, "ERRORE::ID GIA PRESENTE");
+        fprintf(stderr, "ERRORE::ID %s GIA PRESENTE\n", id);
         exit(-1);
     }
 
@@ -314,7 +314,7 @@ void add_in_chain(char *id, struct bucket *bc)
 {
     if (strcmp(bc->nome, id) == 0)
     {
-        fprintf(stderr, "ERRORE::ID GIA PRESENTE");
+        fprintf(stderr, "ERRORE::ID %s GIA PRESENTE\n", id);
         exit(-1);
     }
     if (bc->next == NULL)

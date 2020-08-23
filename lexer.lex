@@ -57,7 +57,7 @@ boolean     {return(BOOLEAN);}
 real        {return(REAL);}
 {realconst} {lexval.fval = atof(yytext); return(REALCONST);}
 {intconst}  {lexval.ival = atoi(yytext); return(INTCONST);}
-{strconst}  {lexval.sval = newstring(yytext); return(STRCONST);}
+{strconst}  {lexval.sval = remove_quotes(newstring(yytext)); return(STRCONST);}
 {boolconst} {
                lexval.bval = (yytext[0] == 'f' ? FALSE : TRUE);
                return(BOOLCONST);
@@ -76,4 +76,17 @@ char *newstring(char *s)
   p = malloc(strlen(s)+1);
   strcpy(p, s);
   return(p);
+}
+
+char *remove_quotes(char *s) {
+    char *clean;
+    clean = (char *)malloc(sizeof(char) * strlen(s));
+    int j = 1;
+    int i;
+    for(i = 0; s[j] != '\"'; i++) {
+        clean[i] = s[j];
+        j++;
+    }
+    clean[i] = '\0';
+    return clean;
 }

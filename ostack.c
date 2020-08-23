@@ -31,7 +31,7 @@ void opush(struct Ostack *ostack, Value val, int size)
     stackNode.val = val;
     stackNode.size = size;
     if (isOFull(ostack)) {
-        fprintf(stderr,"Object Stack Overflow\n");
+        fprintf(stderr,"FATAL ERROR: Object Stack Overflow\n");
         exit(-1);
     }
 
@@ -47,7 +47,7 @@ int isOEmpty(struct Ostack *stack)
 struct Ostack_node opeek(struct Ostack *ostack)
 {
     if (isOEmpty(ostack)) {
-        fprintf(stderr, "Empty Object Stack(Invalid OPEEK)\n");
+        fprintf(stderr, "FATAL ERROR: Empty Object Stack(Invalid OPEEK)\n");
         exit(-1);
     }
     return ostack->stack[ostack->top];
@@ -56,7 +56,7 @@ struct Ostack_node opeek(struct Ostack *ostack)
 struct Ostack_node opop(struct Ostack *ostack)
 {
     if (isOEmpty(ostack)) {
-        fprintf(stderr, "Empty object Stack (Invalid OPOP)\n");
+        fprintf(stderr, "FATAL ERROR: Empty object Stack (Invalid OPOP)\n");
         exit(-1);
     }
 

@@ -5,7 +5,7 @@ body
   if n == 0 then
     fact = 1.0;
   else
-    fact = real(n) * fattoriale(n - ­1);
+    fact = real(n) * fattoriale(n - 1);
   end;
   return fact;
 end;

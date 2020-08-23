@@ -307,12 +307,18 @@ void analizza(Pnode root, struct bucket symbtab[])
                 fprintf(stderr, "ERRORE: CASTING ERRATO\n");
                 exit(-1);
             }
-
+            if (root->child->sem_type == S_INTEGER && root->op_code == T_INTEGER) {
+                fprintf(stderr, "ERRORE: CASTING SUPERFLUO\n");
+                exit(-1);
+            }
+            if (root->child->sem_type == S_REAL && root->op_code == T_REAL) {
+                fprintf(stderr, "ERRORE: CASTING SUPERFLUO\n");
+                exit(-1);
+            }
             root->sem_type = root->op_code == T_INTEGER ? S_INTEGER : S_REAL;
             break;
 
         case N_ASSIGN_STAT:
-
             bc_2 = find_index_in_env(root->child->value.sval, symbtab);
 
             if (bc_2->classe == FUN)
@@ -340,19 +346,19 @@ void analizza(Pnode root, struct bucket symbtab[])
                 fprintf(stderr, "ERRORE: IF NON CORRETTO\n");
                 exit(-1);
             }
-            analizza(root->child->brother->child, symbtab);
+            analizza(root->child->brother, symbtab);
 
 
             if (root->child->brother->brother != NULL)
             {
                 /* code */
-                analizza(root->child->brother->brother->child, symbtab);
+                analizza(root->child->brother->brother, symbtab);
             }
 
             break;
 
         case N_WHILE_STAT:
-            is_loop = 1;
+            is_loop++;
             analizza(root->child, symbtab);
             if (root->child->sem_type != S_BOOLEAN_)
             {
@@ -360,11 +366,11 @@ void analizza(Pnode root, struct bucket symbtab[])
                 exit(-1);
             }
             analizza(root->child->brother, symbtab);
-            is_loop = 0;
+            is_loop--;
             break;
 
         case N_FOR_STAT:
-            is_loop = 1;
+            is_loop++;
             bc = find_index_in_env(root->child->value.sval, symbtab);
             
             if (bc->classe == FUN)
@@ -391,11 +397,10 @@ void analizza(Pnode root, struct bucket symbtab[])
             }
             find_index_in_statlist(root->child->value.sval, root->child->brother->brother->brother->child);
             analizza(root->child->brother->brother->brother, symbtab);
-            is_loop = 0;
+            is_loop--;
             break;
 
         case N_RETURN_STAT:
-
             if (root->child == NULL)
             {
                 root->sem_type = S_VOID_;
@@ -408,7 +413,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (return_type != root->sem_type)
             {
-                fprintf(stderr, "RETURN NON CORRETTO\n");
+                fprintf(stderr, "ERRORE:RETURN NON CORRETTO\n");
                 exit(-1);
             }
             break;
@@ -448,9 +453,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 {
                     /* code */
                     return_type = S_VOID_;
-
                 }
-                
             }
             break;
         }

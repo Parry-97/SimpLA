@@ -447,7 +447,7 @@ int main(int argc, char **argv)
 
     //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
 
-    printf("---- Test Code: -----\n");
+    //printf("---- Test Code: -----\n");
     //get_scode_from_file(s_filename);
 
     //executeSCode(s_filename);

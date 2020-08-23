@@ -28,7 +28,7 @@ void apush(struct Astack *astack, struct Ostack *objects, int call_oid ,struct d
     stackNode.local_mem = local_mem;
 
     if (isAFull(astack)) {
-        fprintf(stderr, "Activation Stack Overflow\n");
+        fprintf(stderr, "FATAL ERROR: Activation Stack Overflow\n");
         exit(-1);
     }
 
@@ -53,7 +53,7 @@ struct Astack *createAStack(unsigned capacity)
 struct Astack_node apop(struct Astack *astack)
 {
     if (isAEmpty(astack)) {
-        fprintf(stderr, "Empty activation Stack (Invalid APOP)\n");
+        fprintf(stderr, "FATAL ERROR: Empty activation Stack (Invalid APOP)\n");
         exit(-1);
     }
 
@@ -64,7 +64,7 @@ struct Astack_node apeek(struct Astack *astack)
 {
     if (isAEmpty(astack))
     {
-        fprintf(stderr, "Empty Activation Stack (Invalid APEEK)\n");
+        fprintf(stderr, "FATAL ERROR: Empty Activation Stack (Invalid APEEK)\n");
         exit(-1);
     }
     return astack->stack[astack->top];

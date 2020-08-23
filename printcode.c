@@ -54,10 +54,8 @@ char *codeops[] =
 
 void codeprint(struct SCode *prog) {
     struct Stat *iter_stat = (struct Stat *)malloc(sizeof(struct Stat));
-    
-    //printf("Start Codeprint\n");
+
     iter_stat = prog->first;
-    //printf("Inizio while\n");
     
     while(iter_stat != NULL)
     {
@@ -86,7 +84,6 @@ char * print_args(struct Stat stat) {
         break;
 
     case LCS:
-        //printf("Inizio LCS\n");
         sprintf(str_args, "%s %s",codeops[stat.op], stat.args[0].sval);
         break;
 

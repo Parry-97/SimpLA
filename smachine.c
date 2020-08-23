@@ -15,7 +15,7 @@ char **string_table;
 
 void executeSCode(char *filename)
 {
-    string_table = (char **)calloc(sizeof(char *), SYMTAB_SIZE);
+    string_table = (char **)calloc((SYMTAB_SIZE), sizeof(char *));
 
     char *format = (char *)malloc(sizeof(char) * 100);
 
@@ -25,19 +25,12 @@ void executeSCode(char *filename)
     char *read_format = (char *)malloc(sizeof(char) * 140);
 
     struct Stat *code_mem = get_scode_from_txt(filename);
-    //struct Stat *code_stat = prog.first;
 
     struct data_mem lod_data;
 
     int call_oid;
     int stat_counter = 0;
 
-    /*while (code_stat != NULL)
-    {
-        code_mem[stat_counter] = *code_stat;
-        code_stat = code_stat->next;
-        stat_counter++;
-    }*/
 
     int num1;
     int num2;
@@ -69,8 +62,6 @@ void executeSCode(char *filename)
 
     struct Ostack *next_stack;
     struct Ostack *current_stack;
-
-    //struct Stat *scode = prog.first;
 
     current_mem = global_mem;
     current_stack = oroot;
@@ -118,7 +109,6 @@ void executeSCode(char *filename)
         case LOD:
             if (code_mem[i].args[0].ival)
             {
-                //lod_data = global_mem[global_obj_id + code_mem[i].args[1].ival];
                 lod_data = current_mem[code_mem[i].args[1].ival];
             }
             else
@@ -269,13 +259,11 @@ void executeSCode(char *filename)
 
             opush(current_stack, ris, get_type_size(T_REAL));
             break;
-
         case GTS:
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) > 0 ? 1 : 0;
-
+            ris.bval = strcmp(s2,s1) > 0 ? 1 : 0;
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -283,7 +271,8 @@ void executeSCode(char *filename)
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) >= 0 ? 1 : 0;
+            ris.bval = strcmp(s2, s1) >= 0 ? 1 : 0;
+
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -291,8 +280,7 @@ void executeSCode(char *filename)
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) < 0 ? 1 : 0;
-
+            ris.bval = strcmp(s2,s1) < 0 ? 1 : 0;
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
 
@@ -300,7 +288,7 @@ void executeSCode(char *filename)
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
-            ris.bval = strcmp(s1, s2) <= 0 ? 1 : 0;
+            ris.bval = strcmp(s2,s1) <= 0 ? 1 : 0;
 
             opush(current_stack, ris, get_type_size(T_INTEGER));
             break;
@@ -408,14 +396,12 @@ void executeSCode(char *filename)
 
             struct Ostack *param_stack = createOStack(100);
             struct Ostack_node param;
-            ;
+
 
             for (int j = 0; j < v1.ival; j++)
             {
                 param = opop(current_stack);
-                //printf("Prob in PSH\n");
                 opush(param_stack, param.val, param.size);
-                //printf("Dopo il PSH\n");
             }
 
             apush(aroot, param_stack, call_oid, (struct data_mem *)malloc(sizeof(struct data_mem) * 200), v2.ival, i + 1);
@@ -446,45 +432,59 @@ void executeSCode(char *filename)
 
         case INP:
             fflush(stdin);
-            char *read_string = (char *)malloc(sizeof(char) * 200);
+            char *read_string = (char *)malloc(sizeof(char) * 256);
             if (strcmp(code_mem[i].args[0].sval, "i") == 0)
             {
 
                 int ivalue;
                 fflush(stdin);
-                scanf("%d", &ivalue);
-                read_value.ival = ivalue;
+                fgets(read_string,256,stdin);
+                fflush(stdin);
+                read_value.ival = atoi(read_string);
             }
             else if (strcmp(code_mem[i].args[0].sval, "r") == 0)
             {
-                fflush(stdin);
                 float fvalue;
-                scanf("%f", &fvalue);
-                read_value.fval = fvalue;
+                fflush(stdin);
+                fgets(read_string,256,stdin);
+                fflush(stdin);
+                read_value.fval = atof(read_string);
             }
             else if (strcmp(code_mem[i].args[0].sval, "s") == 0)
             {
                 char *str = (char *)malloc(sizeof(char) * 200);
                 fflush(stdin);
-                scanf("%s", str);
+                fgets(str,200,stdin);
+                fflush(stdin);
+                char *str2 = malloc(sizeof(char) * (strlen(str)));
 
-                if (string_table[hash(str)] != NULL)
+                int j;
+                for (j = 0; str[j] != '\n'; j++) {
+                    str2[j] = str[j];
+                }
+
+                str2[j] = '\0';
+                if (string_table[hash(str2)] != NULL)
                 {
                     /* code */
-                    str = string_table[hash(str)];
+                    str2 = string_table[hash(str2)];
                 }
                 else
                 {
-                    string_table[hash(str)] = str;
+                    string_table[hash(str2)] = str2;
                 }
-                read_value.sval = str;
+                read_value.sval = str2;
             }
             else if (strcmp(code_mem[i].args[0].sval, "b") == 0)
             {
+
                 int bvalue;
                 fflush(stdin);
-                scanf("%d", &bvalue);
-                read_value.ival = bvalue;
+                fgets(read_string,256,stdin);
+                fflush(stdin);
+                bvalue = atoi(read_string);
+
+                read_value.bval = bvalue > 0 ? TRUE:FALSE;
             }
             else
             {
@@ -505,31 +505,6 @@ void executeSCode(char *filename)
 
         case OUT:
             format = code_mem[i].args[1].sval;
-            /*char **printformat = (char **)malloc(sizeof(char *) * strlen(format));
-            
-            for (int j = 0; j < len; j++)
-            {
-                if (format[j] == 'i')
-                {
-                    printformat[j] = " %d ";
-                }
-                else if (format[j] == 'r')
-                {
-                    printformat[j] = " %f ";
-                }
-                else if (format[j] == 's')
-                {
-                    printformat[j] = " %s ";
-                }
-                else if (format[j] == 'b')
-                {
-                    printformat[j] = " %d ";
-                }
-                else {
-                    char f[3] = {' ',format[j], ' '};
-                    printformat[j] = strcpy(printformat[j], f);
-                }
-            }*/
 
             int len = code_mem[i].args[0].ival;
 
@@ -538,7 +513,7 @@ void executeSCode(char *filename)
 
             for (int j = 0; j < len; j++)
             {
-                temp = opop(current_stack); //non capisco perche triggeri se uso opeek
+                temp = opop(current_stack);
                 opush(temp_stack, temp.val, temp.size);
             }
 
@@ -553,8 +528,7 @@ void executeSCode(char *filename)
                 }
                 else if (format[j] == 'b')
                 {
-
-                    printf("%d", v.bval);
+                    printf("%s", v.bval == TRUE?"true":"false");
                 }
                 else if (format[j] == 'r')
                 {
@@ -588,10 +562,7 @@ void executeSCode(char *filename)
             }
 
             current_mem = func_mem;
-            //record.objects = createOStack(100);
-            //printf("objects new capacity: %d\n", record.objects->capacity);
             current_stack = record.objects;
-            //printf("current stack new capacity: %d\n", current_stack->capacity);
 
             env = 1;
             break;
@@ -612,7 +583,7 @@ void executeSCode(char *filename)
             {
                 if (!isOEmpty(current_stack))
                 {
-                    fprintf(stderr, "Return Error!\n");
+                    fprintf(stderr, "ERRORE: RETURN INVALIDO!\n");
                     exit(-1);
                 }
             }
@@ -633,15 +604,12 @@ void executeSCode(char *filename)
                 next_stack = apeek(aroot).objects;
                 if (code_mem[i].args[0].ival)
                 {
-                    //printf("Prob nel caso di RET %d\n",code_mem[i].args[0].ival);
                     struct Ostack_node ret = opop(current_stack);
                     opush(next_stack, ret.val,ret.size);
-                    //printf("Fine Prob in RET\n");
                 }
                 current_stack = next_stack;
                 
             }
-            //maybe looking too much in the astack...the last apeek/opeek don't work
             i = ret_i;
             break;
 
@@ -662,16 +630,18 @@ int main(int argc, char **argv)
     {
         filename = (char *)malloc(sizeof(char) * (strlen(argv[1]) + 1));
         strcpy(filename, argv[1]);
+
+        if(strstr(filename, ".sim") == NULL) {
+            fprintf(stderr,"ERRORE SIMPLAVM: INDICARE FILE.SIM DA ESEGUIRE\n");
+            exit(-1);
+        }
+
         executeSCode(filename);
     }
     else
     {
-        fprintf(stderr,"ERRORE SIMPLAVM: INDICARE FILE.SIM DA ESEGUIRE");
-        // Program exits if the file pointer returns NULL.
+        fprintf(stderr,"ERRORE SIMPLAVM: INDICARE FILE.SIM DA ESEGUIRE\n");
         exit(-1);
     }
-    //printf("Starting  Code execution\n");
-    //codeprint(scode);
-    //executeSCode(*scode);
     return 0;
 }
