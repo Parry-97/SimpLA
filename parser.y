@@ -439,13 +439,12 @@ int main(int argc, char **argv)
     *tot_prog = appcode(*tot_prog, makecode(STP));
     *tot_prog = appcode(*tot_prog,*sub_prog10);
 
-    printf("---- Correct Code: -----\n");
-    codeprint(tot_prog);
+    printf("---- Compilazione di Codice SimpLA avvenuta con successo -----\n");
+    //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
+    //codeprint(tot_prog);
 
     char *s_filename = strcat(argv[1],".sim");
     save_to_txt(tot_prog, s_filename);
-
-    //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
 
     //printf("---- Test Code: -----\n");
     //get_scode_from_file(s_filename);
