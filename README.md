@@ -1,2 +1,2 @@
-# SimpLA2.0
+# SimpLA
 Versione aggiornata del compilatore SimpLA
