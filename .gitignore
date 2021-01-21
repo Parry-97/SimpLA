@@ -1,1 +1,8 @@
-ignore .idea/
+.idea/
+**.o
+**.sim
+lexer.c
+parser.dot
+parser.h
+parser.output
+parser.c

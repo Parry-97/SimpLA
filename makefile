@@ -47,7 +47,4 @@ parser.h: parser.y def.h
 	bison -vdg -o parser.c parser.y
 
 clean:
-	rm -f lexer.o lexer.c parser.c parser.h parser.output parser.dot parser.o sema.o symbtab.o \
-	tree.o gencode.o printcode.o smachine.o ostack.o astack.o simplac simplavm prova.sim fatt.sim stackstest.sim \
-	prova1.sim prova2.sim prova3.sim string.sim paridispari.sim fibonacci.sim primi.sim media.sim math.sim svm.o \
-	tanti_for.sim nick.sim maggiore.sim
+	rm -f lexer.c parser.c parser.h *.output *.o *.sim *.dot
