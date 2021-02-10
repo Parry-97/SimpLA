@@ -8,7 +8,7 @@ int create_int_temp(struct bucket *env, int *oid_l) {
     if (env[SYMTAB_SIZE - 1].oid == 0)
     {
         env[SYMTAB_SIZE - 1].nome = NULL;
-        env[SYMTAB_SIZE - 1].tipo = S_INTEGER;
+        env[SYMTAB_SIZE - 1].tipo = (struct symb_type){S_INTEGER,1,NULL};
         env[SYMTAB_SIZE - 1].classe = VAR;
         if (env != symbol_table)
         {
@@ -31,7 +31,7 @@ int add_temp_in_chain(struct bucket *bc,int *oid_l) {
     {
         bc = init_bucket();
         bc->nome = NULL;
-        bc->tipo = S_INTEGER;
+        bc->tipo = (struct symb_type){S_INTEGER, 1, NULL};
         bc->classe = VAR;
         bc->oid = ++*oid_l;
         return bc->oid;
@@ -116,7 +116,7 @@ void print_symbol_table(struct bucket symbtab[]) {
 
         printf("%d) elem_id: %s", j, symbtab[j].nome);
         printf("    elem_classe: %d", symbtab[j].classe);
-        printf("    elem_tipo: %d", symbtab[j].tipo);
+        printf("    elem_tipo: %d", symbtab[j].tipo.stipo);
         printf("    elem_oid: %d\n", symbtab[j].oid);
 
         if (symbtab[j].classe == FUN) {
@@ -176,7 +176,8 @@ int hash(const char *id)
 struct bucket *init_bucket()
 {
     struct bucket *b = malloc(sizeof(struct bucket));
-    *b = (struct bucket){(char *)malloc(140), C_NULL, 0, T_NULL, (struct bucket *)malloc(100 * sizeof(struct bucket)), 0,(struct bucket **) calloc(20, sizeof(struct bucket*)), malloc(sizeof(struct bucket))};
+    //TODO: Rivedere
+    *b = (struct bucket){(char *)malloc(140), C_NULL, 0, (struct symb_type){T_NULL, 0, NULL}, (struct bucket *)malloc(100 * sizeof(struct bucket)), 0,(struct bucket **) calloc(20, sizeof(struct bucket*)), malloc(sizeof(struct bucket))};
     b->nome = "";
     b->next = NULL;
     return b;
@@ -204,7 +205,7 @@ void insert_by_ID(char *id, struct bucket symbtab[])
     }
 }
 
-void insert(char *id, symb_class classe, symb_type tipo, struct bucket symbtab[], int *oid_gg)
+void insert(char *id, symb_class classe, struct symb_type tipo, struct bucket symbtab[], int *oid_gg)
 {
     if (strlen(symbtab[hash(id)].nome) == 0)
     {
@@ -232,7 +233,7 @@ void insert(char *id, symb_class classe, symb_type tipo, struct bucket symbtab[]
     }
 }
 
-void insert_func(char *id, symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[])
+void insert_func(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[])
 {
     if (strcmp(symbtab[hash(id)].nome, "") == 0)
     {
@@ -264,7 +265,7 @@ void insert_func(char *id, symb_type tipo, struct param_formali formali, struct 
     }
 }
 
-void add_func_in_chain_args(char *id, symb_type tipo, struct param_formali formali, struct bucket local_env[] ,struct bucket *bc, int *oid_gg)
+void add_func_in_chain_args(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[] ,struct bucket *bc, int *oid_gg)
 {
     if (strcmp(bc->nome, id) == 0)
     {
@@ -288,7 +289,7 @@ void add_func_in_chain_args(char *id, symb_type tipo, struct param_formali forma
     }
 }
 
-void add_in_chain_args(char *id, symb_class classe, symb_type tipo, struct bucket *bc, int *oid_gg)
+void add_in_chain_args(char *id, symb_class classe, struct symb_type tipo, struct bucket *bc, int *oid_gg)
 {
     if (strcmp(bc->nome, id) == 0)
     {
@@ -338,7 +339,7 @@ void print_bucket(struct bucket *bucket)
     {
         printf("elem_id: %s", bucket->nome);
         printf("    elem_classe: %d", bucket->classe);
-        printf("    elem_tipo: %d", bucket->tipo);
+        printf("    elem_tipo: %d", bucket->tipo.stipo);
         printf("    elem_oid: %d", bucket->oid);
 
         if (bucket->classe == FUN)

@@ -73,6 +73,17 @@ void executeSCode(char *filename)
         {
 
         case VARI:
+            //TODO: fare magari un metodo a parte
+            //      non credo mi serve effettivamente memorizzare le dim dei dati ma solo
+            //      distinguere se sono vettori(dim > 1) o atomici(dim = 1) e agire di conseguenza
+
+            //TODO: devo passare i refs dei prossimi elementi a un datamem
+            //      e mettere nel val.mval(un possibile void pointer) la ref di questa sub datamem
+
+            /** Alla fine qua sto facendo distinzione se sono in mem locale o meno
+             * e sto inserendo nel datamem il tipo del dato sebbene sia un'po inutile
+             * Nel caso del vettore inizializzo la var nella current mem mentre i suoi elementi
+             * li devo gestire in altro modo*/
             if (!env)
             {
                 global_mem[global_obj_id++].size = code_mem[i].args[0].ival;

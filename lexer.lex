@@ -4,6 +4,8 @@
     #include "def.h"
     Value lexval;
     int line = 1;
+    //TODO: add lex rule for comments
+    
 %}
 %option noyywrap
 
@@ -15,7 +17,7 @@ realconst   {intconst}"."{intconst}
 strconst    \"([^\"])*\"
 boolconst   false|true
 id          {letter}({letter}|{digit})*
-sugar       [(){};,]
+sugar       [()\{\};,\[\]]
 
 %%
 
@@ -50,6 +52,9 @@ not         {return(NOT);}
 "*"         {return(MUL);}
 "/"         {return(DIV);}
 ":"         {return(DECL);}
+vector      {return(VECTOR);}
+"of"        {return(OF);}
+"in"        {return(IN);}
 void        {return(VOID);}
 integer     {return(INTEGER);}
 string      {return(STRING);}

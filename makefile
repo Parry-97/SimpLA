@@ -1,11 +1,14 @@
-all: simplac simplavm
+#all: simplac simplavm \
 .PHONY: all
 
-simplac: lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o
+#simplac: lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o \
 	cc -g -o simplac lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o
 
-simplavm: lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o
+#simplavm: lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o \
 	cc -g -o simplavm lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o
+
+bup: lexer.o parser.o tree.o symbtab.o
+	cc -g -o bup lexer.o parser.o tree.o symbtab.o
 
 lexer.o: lexer.c parser.h def.h
 	cc -g -c lexer.c 
@@ -22,22 +25,22 @@ symbtab.o: symbtab.c def.h
 sema.o: sema.c def.h
 	cc -g -c sema.c
 
-gencode.o: gencode.c def.h
+#gencode.o: gencode.c def.h \
 	cc -g -c gencode.c
 
-printcode.o: printcode.c def.h
+#printcode.o: printcode.c def.h \
 	cc -g -c printcode.c
 
-ostack.o: ostack.c def.h
+#ostack.o: ostack.c def.h \
 	cc -g -c ostack.c
 
-astack.o: astack.c def.h
+#astack.o: astack.c def.h \
 	cc -g -c astack.c
 
-smachine.o: smachine.c def.h
+#smachine.o: smachine.c def.h \
 	cc -g -c smachine.c
 
-svm.o: svm.c def.h
+#svm.o: svm.c def.h \
 	cc -g -c svm.c
 
 lexer.c: lexer.lex parser.y parser.h parser.c def.h
@@ -47,4 +50,4 @@ parser.h: parser.y def.h
 	bison -vdg -o parser.c parser.y
 
 clean:
-	rm -f lexer.c parser.c parser.h *.output *.o *.sim *.dot
+	rm -f lexer.c parser.c parser.h *.output *.o *.sim *.dot simplac simplavm bup

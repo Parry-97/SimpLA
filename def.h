@@ -25,8 +25,9 @@ typedef enum
     S_STRING,
     S_BOOLEAN_,
     S_VOID_,
-    T_NULL
-} symb_type;
+    T_NULL,
+    S_VECTOR
+} s_type;
 
 struct param_formali
 {
@@ -40,16 +41,26 @@ union symb_env {
 };
 
 
+struct symb_type
+{
+    s_type stipo; //TODO: maybe change name->weird
+    int dim;
+    struct symb_type *sub_type;
+};
+
+//TODO: aggiungere qualcosa per dimensione di vector singolo
 struct bucket
 {
     char *nome;
     symb_class classe;
     int oid;
-    symb_type tipo;
+    struct symb_type tipo;
     union symb_env env;
     struct param_formali formali;
     struct bucket *next;
 };
+
+
 
 typedef enum 
 {
@@ -57,49 +68,29 @@ typedef enum
     N_VAR_DECL_LIST,
     N_VAR_DECL,
     N_ID_LIST,
-    N_TYPE,
     N_FUNC_DECL_LIST,
     N_FUNC_DECL,
     N_OPT_PARAM_LIST,
-    N_PARAM_LIST,
     N_PARAM_DECL,
-    N_BODY,
     N_STAT_LIST,
-    N_STAT,
     N_ASSIGN_STAT,
     N_IF_STAT,
-    N_OPT_ELSE_STAT,
     N_WHILE_STAT,
     N_FOR_STAT,
     N_RETURN_STAT,
-    N_OPT_EXPR,
     N_READ_STAT,
     N_WRITE_STAT,
-    N_WRITE_OP,
     N_EXPR_LIST,
-    N_EXPR,
-    N_LOGIC_OP,
-    N_BOOL_TERM,
-    N_REL_OP,
-    N_REL_TERM,
-    N_LOW_PREC_OP,
-    N_LOW_TERM,
-    N_HIGH_PREC_OP,
-    N_FACTOR,
-    N_UNARY_OP,
-    N_CONST,
     N_FUNC_CALL,
-    N_OPT_EXPR_LIST,
     N_COND_EXPR,
-    N_CAST,
-    N_DECL,
-    N_ASSIGN,
-    N_ERROR,
     N_LOGIC_EXPR,
     N_REL_EXPR,
     N_MATH_EXPR,
     N_NEG_EXPR,
-    N_CASTING
+    N_CASTING,
+    N_TVECTOR,
+    N_VEC_CONSTR,
+    N_LHS
 } Nonterminal;
 
 typedef enum
@@ -117,11 +108,7 @@ typedef enum
     T_WRITE,
     T_WRITELN,
     T_BREAK,
-    T_KEYWORD,
     T_NONTERMINAL,
-    T_RETURN,
-    T_ELSE,
-    T_READ,
     T_AND,
     T_OR,
     T_NOT,
@@ -134,7 +121,8 @@ typedef enum
     T_PLUS,
     T_MINUS,
     T_MUL,
-    T_DIV 
+    T_DIV,
+    T_IN 
 } Typenode;
 
 typedef enum
@@ -222,9 +210,9 @@ struct SCode{
 
 typedef struct snode
 {
-    Typenode type;
+    Typenode type;//TODO: magari cambiare nome in node_type
     Value value;
-    symb_type sem_type;
+    struct symb_type sem_type; //TODO: mi serve tutto symb_type o qualcosa di più semplice?-> NO serve tutto
     int is_gen;
     int op_code;
     struct snode *child, *brother;
@@ -284,12 +272,11 @@ struct param_formali init_pf(int numero_param);
 struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc), 
               *init_bucket(),
               *find_in_chain(char *id, struct bucket *bc),
-              *init_symbol_table();
+              *init_symbol_table(int num);
 
 int conta_fratelli(Pnode fratello, int contatore),
     get_func_num_variables(char *id),
     count_var_in_chain(struct bucket *bc),
-    count_var(struct bucket *env_),
     get_type_size(Typenode type),
     get_func_entry_point(struct SCode *prog, char *id),
     create_int_temp(struct bucket *env, int *oid_l),
@@ -298,20 +285,19 @@ int conta_fratelli(Pnode fratello, int contatore),
     isAEmpty(struct Astack *root),
     isOEmpty(struct Ostack *root);
 
-char *get_format(symb_type txpe),
-     *print_args(struct Stat stat);
+char *get_format(struct symb_type txpe); //TODO: togliere in quanto non servirà
 
 void treeprint(Pnode, int),
     analizza(Pnode root, struct bucket symbtab[]),
     print_symbol_table(struct bucket symbtab[]),
     yyerror(),
     add_in_chain(char *id, struct bucket *bc),
-    add_in_chain_args(char *id, symb_class classe, symb_type tipo, struct bucket *bc, int *oid_gg),
-    add_func_in_chain_args(char *id, symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket *bc, int *oid_gg),
+    add_in_chain_args(char *id, symb_class classe, struct symb_type tipo, struct bucket *bc, int *oid_gg),
+    add_func_in_chain_args(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket *bc, int *oid_gg),
     print_bucket(struct bucket *bucket),
     insert_by_ID(char *id, struct bucket symbtab[]),
-    insert(char *id, symb_class classe, symb_type tipo, struct bucket symbtab[], int *oid_gg),
-    insert_func(char *id, symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[]),
+    insert(char *id, symb_class classe, struct symb_type tipo, struct bucket symbtab[], int *oid_gg),
+    insert_func(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[]),
     codeprint(struct SCode *prog),
     save_to_file(struct SCode *prog, char *filename),
     generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog),
@@ -352,9 +338,8 @@ struct Ostack *createOStack(unsigned capacity);
 struct Astack_node newANode();
 struct Astack_node apop(struct Astack *root);
 
-struct Ostack *createOStack(unsigned capacity);
 int isFull(struct Ostack *stack);
-struct Ostack_node newONode();
+
 struct Ostack_node opeek(struct Ostack *ostack);
 struct Astack_node apeek(struct Astack *astack);
 

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "string.h"
 #include "def.h"
+#include <stdio.h>
 
 struct Astack_node newANode()
 {

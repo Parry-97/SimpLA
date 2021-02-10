@@ -103,9 +103,9 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
 
         case N_VAR_DECL:
-            
+            //TODO: cancellare typeSize..inutile
             type_size = get_type_size(p->child->brother->type);
-
+            
             int num;
             num = conta_fratelli(p->child->child, 0);
 
@@ -191,7 +191,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             case T_GT:
 
-                switch (p->child->sem_type)
+                switch (p->child->sem_type.stipo)
                 {
                 case S_REAL:
                     *prog = appcode(*prog, makecode(GTR));
@@ -209,7 +209,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             case T_LT:
 
-                switch (p->child->sem_type)
+                switch (p->child->sem_type.stipo)
                 {
                 case S_REAL:
                     *prog = appcode(*prog, makecode(LTR));
@@ -227,7 +227,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             case T_GE:
 
-                switch (p->child->sem_type)
+                switch (p->child->sem_type.stipo)
                 {
                 case S_REAL:
                     *prog = appcode(*prog, makecode(GER));
@@ -245,7 +245,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             case T_LE:
 
-                switch (p->child->sem_type)
+                switch (p->child->sem_type.stipo)
                 {
                 case S_REAL:
                     *prog = appcode(*prog, makecode(LER));
@@ -273,7 +273,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             switch (p->op_code)
             {
             case T_PLUS:
-                if (p->sem_type == S_REAL)
+                if (p->sem_type.stipo == S_REAL)
                 {
                     math_code = makecode(ADR);
                 }
@@ -286,7 +286,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 break;
 
             case T_MINUS:
-                if (p->sem_type == S_REAL)
+                if (p->sem_type.stipo == S_REAL)
                 {
                     math_code = makecode(SBR);
                 }
@@ -299,7 +299,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 break;
 
             case T_MUL:
-                if (p->sem_type == S_REAL)
+                if (p->sem_type.stipo == S_REAL)
                 {
                     math_code = makecode(MUR);
                 }
@@ -312,7 +312,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 break;
 
             case T_DIV:
-                if (p->sem_type == S_REAL)
+                if (p->sem_type.stipo == S_REAL)
                 {
                     math_code = makecode(DVR);
                 }
@@ -337,7 +337,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             }
             else
             {
-                if (p->child->sem_type == S_REAL)
+                if (p->child->sem_type.stipo == S_REAL)
                 {
                     *prog = appcode(*prog, makecode(UMR));
                 }
@@ -615,7 +615,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             }
 
             int num_return = 1;
-            if (func_bc->tipo == S_VOID_)
+            if (func_bc->tipo.stipo == S_VOID_)
             {
                 num_return = 0;
             }
@@ -896,9 +896,9 @@ struct SCode make_lcs(char *s)
     return code;
 }
 
-char *get_format(symb_type txpe)
+char *get_format(struct symb_type txpe) //TODO: Safely delete 
 {
-    switch (txpe)
+    switch (txpe.stipo)
     {
     case S_REAL:
         return "r";
@@ -921,7 +921,7 @@ char *get_format(symb_type txpe)
     }
 }
 
-int get_type_size(Typenode type)
+int get_type_size(Typenode type) //TODO: togliere in modo sicuro
 {
 
     switch (type)
@@ -951,20 +951,18 @@ int is_const(Pnode p)
     {
     case T_INTCONST:
         return 0;
-        break;
+
     case T_BOOLCONST:
         return 1;
-        break;
+
     case T_STRCONST:
         return 2;
-        break;
+
     case T_REALCONST:
         return 3;
-        break;
 
     default:
         return 4;
-        break;
     }
 }
 

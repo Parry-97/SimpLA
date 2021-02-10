@@ -1,0 +1,21 @@
+numeri: vector [ 7 ] of integer;
+matrice: vector[3] of vector [5] of integer;
+i : integer; 
+body
+    numeri = vector(5,29,13,25,67,123,45,78,12);
+    numeri[5] = 424;
+    i = 3;
+
+    matrice = vector(vector(1,2,3,4,5),
+                     vector(2,4,6,8,10),
+                     vector(3,6,9,12,15));
+
+    if matrice[1][2] == 6 then
+        writeln("Matrice mal condizionata");    
+    end;                 
+
+    if matrice[numeri[i]][matrice[1][2]] == 9 and true then
+        read(numeri);
+    end;
+
+end.
