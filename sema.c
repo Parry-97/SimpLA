@@ -150,6 +150,7 @@ struct bucket *find_index_in_env(char *id, struct bucket symbtab[])
 }
 
 //FIXME: cambiare dove necessarrio il confronto di tipi con compare_types();
+//FIXME: Diversificare meglio gli errori, troppo simili!
 void analizza(Pnode root, struct bucket symbtab[])
 {
     int n_expr;
@@ -207,12 +208,27 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             break;
 
-        case N_REL_EXPR:
+        case N_REL_EXPR: //FIXME: considerare IN e pag(4-5 di semantica)
             analizza(root->child, symbtab);
             analizza(root->child->brother, symbtab);
-            if (root->child->sem_type.stipo != root->child->brother->sem_type.stipo)
+
+            if ((root->child->sem_type.stipo == S_VECTOR || root->child->brother->sem_type.stipo == S_VECTOR))
             {
-                fprintf(stderr, "ERRORE: CONDIZIONE RELAZIONALE ERRATA\n");
+                if (root->op_code != T_IN)
+                {
+                    fprintf(stderr, "RELERR1: CONDIZIONE RELAZIONALE ERRATA \n");
+                    exit(-1);
+                }
+                else if (!compare_types(root->child->sem_type, *(root->child->brother->sem_type.sub_type)))
+                {
+
+                    fprintf(stderr, "RELERR2: CONDIZIONE RELAZIONE ERRATA \n");
+                    exit(-1);
+                }
+            }
+            else if (root->child->sem_type.stipo != root->child->brother->sem_type.stipo)
+            {
+                fprintf(stderr, "RELERR3: CONDIZIONE RELAZIONALE ERRATA\n");
                 exit(-1);
             }
             root->sem_type.stipo = S_BOOLEAN_;
@@ -298,12 +314,12 @@ void analizza(Pnode root, struct bucket symbtab[])
             if (n_expr > 0)
             {
                 Pnode iter_expr = root->child->child;
-                analizza(iter_expr,symbtab);
+                analizza(iter_expr, symbtab);
                 expr_type = root->child->child->sem_type;
                 for (int i = 0; i < n_expr; i++)
                 {
                     /* code */
-                    analizza(iter_expr,symbtab); //FIXME: magari non ripetere
+                    analizza(iter_expr, symbtab); //FIXME: magari non ripetere
                     if (!compare_types(iter_expr->sem_type, expr_type))
                     {
                         fprintf(stderr, "ERRORE: VETTORE NON PROPRIAMENTE COSTRUITO\n");

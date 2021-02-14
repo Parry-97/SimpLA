@@ -9,8 +9,12 @@ body
     
     matrice = vector(vector(1,2,3,4,5),
                      vector(2,4,6,8,10),
-                     vector(3,6,9,12,3));
+                     vector(3,6,9,12,3*32));
 
+
+    if 5 in numeri then
+        write("5 è stato trovato");
+    end;
 
     if matrice[1][2] == 6 then
         writeln("Matrice mal condizionata");    
