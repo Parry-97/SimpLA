@@ -31,7 +31,7 @@ struct bucket **temp_descr;
 struct bucket *current_env;
 
 char *id_func;
-struct symb_type current_type; /** Serve per memorizzare il tipo di una funzione*/
+struct symb_type current_type; /** Serve per memorizzare il bucket_type di una funzione*/
 int numero_param_formali = 0;
 int oid_locale = 0;
 int *current_oid;
@@ -124,6 +124,7 @@ param_list : param_decl ',' param_list {$$ = $1; $1->brother = $3;}
 
 param_decl : {numero_param_formali++;}ID {$$ = idnode();} DECL type { $$ = nontermnode(N_PARAM_DECL); $$->child = $3; $3->brother = $5;
                                                                       insert($3->value.sval, PAR, $5->sem_type, current_env, current_oid);
+                                                                      temp_descr[numero_param_formali - 1] = find_in_chain($3->value.sval, &current_env[hash($3->value.sval)]);
                                                                     };
 
 body : BODY stat_list END {$$ = nontermnode(N_STAT_LIST); $$->child = $2;};
@@ -352,9 +353,9 @@ int main(int argc, char **argv)
 
     //print_symbol_table(symbol_table);
     
-    /*analizza(root, symbol_table);
+    analizza(root, symbol_table);
     
-    *sub_prog10 = endcode();
+    /*sub_prog10 = endcode();
     generateCode(root, symbol_table, sub_prog10);
     int size;
     size = sub_prog10->num;

@@ -2,19 +2,39 @@
 #include "string.h"
 #include "def.h"
 
-//TODO : add indexing code generation
-//TODO: necessario poi un controllo semantico che const sia definita e INTERA la var di indexing
-
 extern struct bucket *symbol_table;
-struct symb_type return_type = (struct symb_type){S_VOID_,1,NULL};
+struct symb_type return_type = (struct symb_type){S_VOID_, 1, NULL};
 int is_loop = 0;
+
+bool compare_types(struct symb_type type1, struct symb_type type2)
+{
+    if (type1.dim != type2.dim || type1.stipo != type2.stipo)
+    {
+        return false;
+    }
+    if (type1.sub_type == NULL && type2.sub_type == NULL)
+    {
+        return true;
+    }
+    else
+    {
+        return compare_types(*(type1.sub_type), *(type2.sub_type));
+    }
+}
 
 void find_index_in_statlist(char *id, Pnode node)
 {
-    
+
     switch (node->value.ival)
     {
+        //TODO: sembra esserci un problema con gli lhs che non hanno piu un reference a un id
     case N_ASSIGN_STAT:
+
+        if (node->child->type != T_ID)
+        {
+            break;
+        }
+
         if (strcmp(node->child->value.sval, id) == 0)
         {
             fprintf(stderr, "ERRORE: L'INDICE NON SI PUO' ASSEGNARE NEL FOR\n");
@@ -73,7 +93,6 @@ void find_index_in_statlist(char *id, Pnode node)
         /* code */
         find_index_in_statlist(id, node->brother);
     }
-    
 }
 
 struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc)
@@ -92,8 +111,9 @@ struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc)
     }
 }
 
-int conta_fratelli(Pnode fratello, int contatore)
+int conta_fratelli(Pnode fratello)
 {
+    int contatore = 0;
     while (fratello != NULL)
     {
         contatore++;
@@ -114,7 +134,7 @@ void analizza_id(Pnode nodo_id, struct bucket symbtab[])
         bc_1 = find_in_chain(nodo_id->value.sval, &symbol_table[hash(nodo_id->value.sval)]);
     }
 
-    nodo_id->sem_type = bc_1->tipo;
+    nodo_id->sem_type = bc_1->bucket_type; //TODO: Check it out
 }
 
 struct bucket *find_index_in_env(char *id, struct bucket symbtab[])
@@ -129,16 +149,17 @@ struct bucket *find_index_in_env(char *id, struct bucket symbtab[])
     return bc;
 }
 
+//FIXME: cambiare dove necessarrio il confronto di tipi con compare_types();
 void analizza(Pnode root, struct bucket symbtab[])
 {
+    int n_expr;
+    struct bucket *bc_6;
     struct bucket *bc_5;
     struct bucket *bc_4;
     struct bucket *bc_3;
     struct bucket *bc_2;
     struct bucket *bc_1;
     struct bucket *bc;
-
-    
 
     if (root->type == T_ID)
     {
@@ -152,8 +173,6 @@ void analizza(Pnode root, struct bucket symbtab[])
             fprintf(stderr, "ERRORE: BREAK NON CONCESSO\n");
             exit(-1);
         }
-        
-        
     }
     else if (root->type == T_NONTERMINAL)
     {
@@ -167,7 +186,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 fprintf(stderr, "ERRORE: TIPO VOID APPLICABILE SOLO A FUNZIONI\n");
                 exit(-1);
             }
-            break;    
+            break;
 
         case N_LOGIC_EXPR:
             if (root->op_code != T_AND && root->op_code != T_OR)
@@ -238,6 +257,72 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             break;
 
+        case N_LHS:
+
+            analizza(root->child, symbtab);
+            if (root->child->type == T_ID)
+            {
+                bc_6 = find_index_in_env(root->child->value.sval, symbtab);
+
+                if (bc_6->classe == FUN)
+                {
+                    fprintf(stderr, "ERRORE: NON E' POSSIBILE INDICIZZARE UNA FUNZIONE\n");
+                    exit(-1);
+                }
+                /* code */
+            }
+
+            //tecnicamente potrei fare questo controllo con N_TVECTOR prima di arrivare qua
+            if (root->child->sem_type.sub_type->stipo == S_VOID_)
+            {
+                fprintf(stderr, "ERRORE: NON E' POSSIBILE CREARE VETTORI DI TIPO VOID\n");
+                exit(-1);
+            }
+
+            if (root->child->sem_type.stipo == S_VECTOR && root->child->brother->sem_type.stipo == S_INTEGER)
+            {
+                root->sem_type = *(root->child->sem_type.sub_type);
+            }
+
+            break;
+
+        //TODO: fare TYPE INFERENCE e checking che siano tutte expr dello stesso bucket_type
+        case N_VEC_CONSTR:
+
+            if (root->child != NULL)
+            {
+                n_expr = conta_fratelli(root->child->child);
+            }
+
+            struct symb_type expr_type;
+            if (n_expr > 0)
+            {
+                Pnode iter_expr = root->child->child;
+                analizza(iter_expr,symbtab);
+                expr_type = root->child->child->sem_type;
+                for (int i = 0; i < n_expr; i++)
+                {
+                    /* code */
+                    analizza(iter_expr,symbtab); //FIXME: magari non ripetere
+                    if (!compare_types(iter_expr->sem_type, expr_type))
+                    {
+                        fprintf(stderr, "ERRORE: VETTORE NON PROPRIAMENTE COSTRUITO\n");
+                        exit(-1);
+                    }
+                    iter_expr = iter_expr->brother;
+                }
+                root->sem_type = (struct symb_type){S_VECTOR, n_expr, &expr_type};
+            }
+            else
+            {
+                root->sem_type = (struct symb_type){S_VECTOR, 0, NULL};
+            }
+
+            break;
+
+            /*case N_TVECTOR: //TODO: verificare se serve veramente per analisi semantica
+            break;*/
+
         case N_FUNC_CALL:
             bc_3 = find_in_chain(root->child->value.sval, &symbol_table[hash(root->child->value.sval)]);
 
@@ -247,13 +332,11 @@ void analizza(Pnode root, struct bucket symbtab[])
                 exit(-1);
             }
 
-            int cont = 0;
             int n = 0;
             if (root->child->brother != NULL)
             {
-                n = conta_fratelli(root->child->brother->child, cont);
+                n = conta_fratelli(root->child->brother->child);
             }
-            
 
             if (n != bc_3->formali.num)
             {
@@ -266,11 +349,11 @@ void analizza(Pnode root, struct bucket symbtab[])
             {
                 temp_node = root->child->brother->child;
             }
-            
+
             for (int i = 0; i < n; i++)
             {
                 analizza(temp_node, symbtab);
-                if (bc_3->formali.descr[i]->tipo.stipo != temp_node->sem_type.stipo)
+                if (bc_3->formali.descr[i]->bucket_type.stipo != temp_node->sem_type.stipo)
                 {
                     fprintf(stderr, "ERRORE: TIPI DI DATI NON COMPATIBILI\n");
                     exit(-1);
@@ -279,7 +362,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 if (temp_node->brother != NULL)
                     temp_node = temp_node->brother;
             }
-            root->sem_type = bc_3->tipo;
+            root->sem_type = bc_3->bucket_type;
             break;
 
         case N_COND_EXPR:
@@ -323,25 +406,18 @@ void analizza(Pnode root, struct bucket symbtab[])
             root->sem_type.stipo = root->op_code == T_INTEGER ? S_INTEGER : S_REAL;
             break;
 
-        case N_ASSIGN_STAT:
-            bc_2 = find_index_in_env(root->child->value.sval, symbtab);
-
-            if (bc_2->classe == FUN)
-            {
-                fprintf(stderr, "ERRORE: NON E' POSSIBILE ASSEGNARE UNA FUNZIONE\n");
-                exit(-1);
-            }
+        case N_ASSIGN_STAT: //FIXME: change for lhs
 
             analizza(root->child, symbtab);
             analizza(root->child->brother, symbtab);
-            if (root->child->sem_type.stipo != root->child->brother->sem_type.stipo)
+            //FIXME: Usare magari compare_types
+            if (root->child->sem_type.stipo != root->child->brother->sem_type.stipo) //TODO: POsso assegnare vettori interni?
             {
                 fprintf(stderr, "ERRORE: ASSEGNAMENTO NON CONSENTITO (TIPI DIFFERENTI)\n");
                 exit(-1);
             }
 
             break;
-
 
         case N_IF_STAT:
 
@@ -352,7 +428,6 @@ void analizza(Pnode root, struct bucket symbtab[])
                 exit(-1);
             }
             analizza(root->child->brother, symbtab);
-
 
             if (root->child->brother->brother != NULL)
             {
@@ -377,7 +452,7 @@ void analizza(Pnode root, struct bucket symbtab[])
         case N_FOR_STAT:
             is_loop++;
             bc = find_index_in_env(root->child->value.sval, symbtab);
-            
+
             if (bc->classe == FUN)
             {
                 fprintf(stderr, "ERRORE: NON E' POSSIBILE UTILIZZARE UNA FUNZIONE COME INDICE\n");
@@ -440,7 +515,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             {
                 bc_5 = find_in_chain(root->child->value.sval, &symbol_table[hash(root->child->value.sval)]);
                 symbtab = bc_5->env.local_env;
-                return_type = bc_5->tipo;
+                return_type = bc_5->bucket_type;
             }
 
             if (root->child != NULL)

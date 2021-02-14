@@ -54,7 +54,7 @@ struct bucket
     char *nome;
     symb_class classe;
     int oid;
-    struct symb_type tipo;
+    struct symb_type bucket_type;
     union symb_env env;
     struct param_formali formali;
     struct bucket *next;
@@ -274,7 +274,7 @@ struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc),
               *find_in_chain(char *id, struct bucket *bc),
               *init_symbol_table(int num);
 
-int conta_fratelli(Pnode fratello, int contatore),
+int conta_fratelli(Pnode fratello),
     get_func_num_variables(char *id),
     count_var_in_chain(struct bucket *bc),
     get_type_size(Typenode type),
@@ -292,12 +292,12 @@ void treeprint(Pnode, int),
     print_symbol_table(struct bucket symbtab[]),
     yyerror(),
     add_in_chain(char *id, struct bucket *bc),
-    add_in_chain_args(char *id, symb_class classe, struct symb_type tipo, struct bucket *bc, int *oid_gg),
-    add_func_in_chain_args(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket *bc, int *oid_gg),
+    add_in_chain_args(char *id, symb_class classe, struct symb_type bucket_type, struct bucket *bc, int *oid_gg),
+    add_func_in_chain_args(char *id, struct symb_type bucket_type, struct param_formali formali, struct bucket local_env[], struct bucket *bc, int *oid_gg),
     print_bucket(struct bucket *bucket),
     insert_by_ID(char *id, struct bucket symbtab[]),
-    insert(char *id, symb_class classe, struct symb_type tipo, struct bucket symbtab[], int *oid_gg),
-    insert_func(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[]),
+    insert(char *id, symb_class classe, struct symb_type bucket_type, struct bucket symbtab[], int *oid_gg),
+    insert_func(char *id, struct symb_type bucket_type, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[]),
     codeprint(struct SCode *prog),
     save_to_file(struct SCode *prog, char *filename),
     generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog),
@@ -347,6 +347,8 @@ struct Astack_node apeek(struct Astack *astack);
 char *save_args(struct Stat stat);
 
 struct Stat *get_scode_from_txt(char *filename);
+
+bool compare_types(struct symb_type type1, struct symb_type type2);
 
 void save_to_txt(struct SCode *prog, char *filename),
      get_args_from_str(struct Stat *pStat, char *str_args);

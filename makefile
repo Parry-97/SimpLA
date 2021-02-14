@@ -7,8 +7,8 @@
 #simplavm: lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o \
 	cc -g -o simplavm lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o
 
-bup: lexer.o parser.o tree.o symbtab.o
-	cc -g -o bup lexer.o parser.o tree.o symbtab.o
+bup: lexer.o parser.o tree.o symbtab.o sema.o
+	cc -g -o bup lexer.o parser.o tree.o symbtab.o sema.o
 
 lexer.o: lexer.c parser.h def.h
 	cc -g -c lexer.c 

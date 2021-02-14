@@ -8,7 +8,7 @@ int create_int_temp(struct bucket *env, int *oid_l) {
     if (env[SYMTAB_SIZE - 1].oid == 0)
     {
         env[SYMTAB_SIZE - 1].nome = NULL;
-        env[SYMTAB_SIZE - 1].tipo = (struct symb_type){S_INTEGER,1,NULL};
+        env[SYMTAB_SIZE - 1].bucket_type = (struct symb_type){S_INTEGER,1,NULL};
         env[SYMTAB_SIZE - 1].classe = VAR;
         if (env != symbol_table)
         {
@@ -31,7 +31,7 @@ int add_temp_in_chain(struct bucket *bc,int *oid_l) {
     {
         bc = init_bucket();
         bc->nome = NULL;
-        bc->tipo = (struct symb_type){S_INTEGER, 1, NULL};
+        bc->bucket_type = (struct symb_type){S_INTEGER, 1, NULL};
         bc->classe = VAR;
         bc->oid = ++*oid_l;
         return bc->oid;
@@ -116,7 +116,7 @@ void print_symbol_table(struct bucket symbtab[]) {
 
         printf("%d) elem_id: %s", j, symbtab[j].nome);
         printf("    elem_classe: %d", symbtab[j].classe);
-        printf("    elem_tipo: %d", symbtab[j].tipo.stipo);
+        printf("    elem_tipo: %d", symbtab[j].bucket_type.stipo);
         printf("    elem_oid: %d\n", symbtab[j].oid);
 
         if (symbtab[j].classe == FUN) {
@@ -205,13 +205,13 @@ void insert_by_ID(char *id, struct bucket symbtab[])
     }
 }
 
-void insert(char *id, symb_class classe, struct symb_type tipo, struct bucket symbtab[], int *oid_gg)
+void insert(char *id, symb_class classe, struct symb_type bucket_type, struct bucket symbtab[], int *oid_gg)
 {
     if (strlen(symbtab[hash(id)].nome) == 0)
     {
         symbtab[hash(id)].nome = newstring(id);
         symbtab[hash(id)].classe = classe;
-        symbtab[hash(id)].tipo = tipo;
+        symbtab[hash(id)].bucket_type = bucket_type;
         symbtab[hash(id)].oid = ++*oid_gg;
     }
     else if (strcmp(symbtab[hash(id)].nome, id) == 0)
@@ -224,22 +224,22 @@ void insert(char *id, symb_class classe, struct symb_type tipo, struct bucket sy
         symbtab[hash(id)].next = init_bucket();
         symbtab[hash(id)].next->nome = newstring(id);
         symbtab[hash(id)].next->classe = classe;
-        symbtab[hash(id)].next->tipo = tipo;
+        symbtab[hash(id)].next->bucket_type = bucket_type;
         symbtab[hash(id)].next->oid = ++*oid_gg;
     }
     else
     {
-        add_in_chain_args(id, classe, tipo, symbtab[hash(id)].next, oid_gg);
+        add_in_chain_args(id, classe, bucket_type, symbtab[hash(id)].next, oid_gg);
     }
 }
 
-void insert_func(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[])
+void insert_func(char *id, struct symb_type bucket_type, struct param_formali formali, struct bucket local_env[], struct bucket symbtab[])
 {
     if (strcmp(symbtab[hash(id)].nome, "") == 0)
     {
         symbtab[hash(id)].nome = newstring(id);
         symbtab[hash(id)].classe = FUN;
-        symbtab[hash(id)].tipo = tipo;
+        symbtab[hash(id)].bucket_type = bucket_type;
         symbtab[hash(id)].oid = ++oid_g;
         symbtab[hash(id)].formali = formali;
         symbtab[hash(id)].env.local_env = local_env;
@@ -254,18 +254,18 @@ void insert_func(char *id, struct symb_type tipo, struct param_formali formali, 
         symbtab[hash(id)].next = init_bucket();
         symbtab[hash(id)].next->nome = newstring(id);
         symbtab[hash(id)].next->classe = FUN;
-        symbtab[hash(id)].next->tipo = tipo;
+        symbtab[hash(id)].next->bucket_type = bucket_type;
         symbtab[hash(id)].next->oid = ++oid_g;
         symbtab[hash(id)].next->formali = formali;
         symbtab[hash(id)].next->env.local_env = local_env;
     }
     else
     {
-        add_func_in_chain_args(id, tipo, formali, local_env,symbtab[hash(id)].next, &oid_g);
+        add_func_in_chain_args(id, bucket_type, formali, local_env,symbtab[hash(id)].next, &oid_g);
     }
 }
 
-void add_func_in_chain_args(char *id, struct symb_type tipo, struct param_formali formali, struct bucket local_env[] ,struct bucket *bc, int *oid_gg)
+void add_func_in_chain_args(char *id, struct symb_type bucket_type, struct param_formali formali, struct bucket local_env[] ,struct bucket *bc, int *oid_gg)
 {
     if (strcmp(bc->nome, id) == 0)
     {
@@ -278,18 +278,18 @@ void add_func_in_chain_args(char *id, struct symb_type tipo, struct param_formal
         bc->next = init_bucket();
         bc->next->nome = newstring(id);
         bc->next->classe = FUN;
-        bc->next->tipo = tipo;
+        bc->next->bucket_type = bucket_type;
         bc->next->oid = ++*oid_gg;
         bc->next->formali = formali;
         bc->next->env.local_env = local_env;
     }
     else
     {
-        add_func_in_chain_args(id, tipo, formali,local_env, bc->next, oid_gg);
+        add_func_in_chain_args(id, bucket_type, formali,local_env, bc->next, oid_gg);
     }
 }
 
-void add_in_chain_args(char *id, symb_class classe, struct symb_type tipo, struct bucket *bc, int *oid_gg)
+void add_in_chain_args(char *id, symb_class classe, struct symb_type bucket_type, struct bucket *bc, int *oid_gg)
 {
     if (strcmp(bc->nome, id) == 0)
     {
@@ -302,12 +302,12 @@ void add_in_chain_args(char *id, symb_class classe, struct symb_type tipo, struc
         bc->next = init_bucket();
         bc->next->nome = newstring(id);
         bc->next->classe = classe;
-        bc->next->tipo = tipo;
+        bc->next->bucket_type = bucket_type;
         bc->next->oid = ++*oid_gg;
     }
     else
     {
-        add_in_chain_args(id, classe, tipo, bc->next, oid_gg);
+        add_in_chain_args(id, classe, bucket_type, bc->next, oid_gg);
     }
 }
 
@@ -339,7 +339,7 @@ void print_bucket(struct bucket *bucket)
     {
         printf("elem_id: %s", bucket->nome);
         printf("    elem_classe: %d", bucket->classe);
-        printf("    elem_tipo: %d", bucket->tipo.stipo);
+        printf("    elem_tipo: %d", bucket->bucket_type.stipo);
         printf("    elem_oid: %d", bucket->oid);
 
         if (bucket->classe == FUN)

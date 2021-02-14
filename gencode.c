@@ -107,7 +107,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             type_size = get_type_size(p->child->brother->type);
             
             int num;
-            num = conta_fratelli(p->child->child, 0);
+            num = conta_fratelli(p->child->child); //TODO: CHECK
 
             for (int i = 0; i < num; i++)
             {
@@ -394,7 +394,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
         case N_READ_STAT:
 
-            nume = conta_fratelli(p->child->child, 0);
+            nume = conta_fratelli(p->child->child); //TODO:CHECK
             Pnode cont;
             cont = p->child->child;
 
@@ -415,7 +415,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
                 char *format = (char *)malloc(sizeof(char) * 25);
 
-                format = get_format(cont_bucket->tipo);
+                format = get_format(cont_bucket->bucket_type);
                 *prog = appcode(*prog, makeread(INP, format, env1, oid1));
                 cont = cont->brother;
             }
@@ -426,7 +426,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             count_expr = p->child->brother->child;
             int num_expr;
-            num_expr = conta_fratelli(count_expr, 0);
+            num_expr = conta_fratelli(count_expr); //TODO: CHECK
 
             char *write_format = (char *)malloc(sizeof(char) * 25);
 
@@ -456,7 +456,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             if (expr_list != NULL)
             {
                 count_bro = expr_list->child;
-                num_formals = conta_fratelli(count_bro, 0);
+                num_formals = conta_fratelli(count_bro); //TODO: CHECK
 
                 while (count_bro != NULL)
                 {
@@ -615,7 +615,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             }
 
             int num_return = 1;
-            if (func_bc->tipo.stipo == S_VOID_)
+            if (func_bc->bucket_type.stipo == S_VOID_)
             {
                 num_return = 0;
             }

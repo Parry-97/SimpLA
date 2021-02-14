@@ -1,0 +1,17 @@
+z,x,y: vector [5] of integer;
+i,j: integer;
+
+func copyvet(k: vector[5] of integer): vector [5] of integer
+testi: integer;
+retvec: vector [5] of integer;
+
+body
+    for i = 0 to 5 do
+        retvec[i] = k[i];
+    end;
+    return retvec;    
+end;
+
+body
+    z = vector(1,2,3,4,5);
+end.
