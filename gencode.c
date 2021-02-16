@@ -20,9 +20,10 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
         return;
     }
 
-    int type_size, env2, oid2, nume, return_offset, break_jump, return_jump;
+    int env2, oid2, nume, return_offset, break_jump, return_jump;
     struct SCode math_code, cast_code, *while_expr;
     Pnode count_expr, count_bro, cont_stat, cont_stat2, cont_stat3;
+    struct symb_type decl_type;
 
     struct bucket *func_bc;
 
@@ -104,14 +105,14 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
         case N_VAR_DECL:
             //TODO: cancellare typeSize..inutile
-            type_size = get_type_size(p->child->brother->type);
+            decl_type = p->child->brother->sem_type;
             
             int num;
             num = conta_fratelli(p->child->child); //TODO: CHECK
 
             for (int i = 0; i < num; i++)
             {
-                *prog = appcode(*prog, makecode1(VARI, type_size));
+                *prog = appcode(*prog, makecode1(VARI, decl_type.dim)); //TODO: CHECK
             }
 
             p->is_gen = 1;

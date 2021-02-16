@@ -6,15 +6,24 @@ extern struct bucket *symbol_table;
 struct symb_type return_type = (struct symb_type){S_VOID_, 1, NULL};
 int is_loop = 0;
 
+//FIXME: Maybe?
 bool compare_types(struct symb_type type1, struct symb_type type2)
 {
-    if (type1.dim != type2.dim || type1.stipo != type2.stipo)
+    if (type1.dim != type2.dim)
     {
         return false;
     }
-    if (type1.sub_type == NULL && type2.sub_type == NULL)
+    else if (type1.stipo != type2.stipo)
+    {
+        return false;
+    }
+    else if (type1.sub_type == NULL && type2.sub_type == NULL)
     {
         return true;
+    }
+    else if (type1.sub_type == NULL || type2.sub_type == NULL)
+    {
+        return false;
     }
     else
     {
@@ -27,7 +36,7 @@ void find_index_in_statlist(char *id, Pnode node)
 
     switch (node->value.ival)
     {
-        //TODO: sembra esserci un problema con gli lhs che non hanno piu un reference a un id
+        //TODO: lhs non hanno piu un reference a un id: PROBLEMA?
     case N_ASSIGN_STAT:
 
         if (node->child->type != T_ID)
@@ -134,7 +143,7 @@ void analizza_id(Pnode nodo_id, struct bucket symbtab[])
         bc_1 = find_in_chain(nodo_id->value.sval, &symbol_table[hash(nodo_id->value.sval)]);
     }
 
-    nodo_id->sem_type = bc_1->bucket_type; //TODO: Check it out
+    nodo_id->sem_type = bc_1->bucket_type;
 }
 
 struct bucket *find_index_in_env(char *id, struct bucket symbtab[])
@@ -153,7 +162,7 @@ struct bucket *find_index_in_env(char *id, struct bucket symbtab[])
 //FIXME: Diversificare meglio gli errori, troppo simili!
 void analizza(Pnode root, struct bucket symbtab[])
 {
-    int n_expr;
+    int n_expr = 0;
     struct bucket *bc_6;
     struct bucket *bc_5;
     struct bucket *bc_4;
@@ -208,7 +217,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             break;
 
-        case N_REL_EXPR: //FIXME: considerare IN e pag(4-5 di semantica)
+        case N_REL_EXPR:
             analizza(root->child, symbtab);
             analizza(root->child->brother, symbtab);
 
@@ -302,42 +311,30 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             break;
 
-        //TODO: fare TYPE INFERENCE e checking che siano tutte expr dello stesso bucket_type
         case N_VEC_CONSTR:
 
-            if (root->child != NULL)
+            n_expr = conta_fratelli(root->child->child);
+            Pnode iter_expr = root->child->child;
+            while (iter_expr != NULL)
             {
-                n_expr = conta_fratelli(root->child->child);
-            }
-
-            struct symb_type expr_type;
-            if (n_expr > 0)
-            {
-                Pnode iter_expr = root->child->child;
                 analizza(iter_expr, symbtab);
-                expr_type = root->child->child->sem_type;
-                for (int i = 0; i < n_expr; i++)
-                {
-                    /* code */
-                    analizza(iter_expr, symbtab); //FIXME: magari non ripetere
-                    if (!compare_types(iter_expr->sem_type, expr_type))
-                    {
-                        fprintf(stderr, "ERRORE: VETTORE NON PROPRIAMENTE COSTRUITO\n");
-                        exit(-1);
-                    }
-                    iter_expr = iter_expr->brother;
-                }
-                root->sem_type = (struct symb_type){S_VECTOR, n_expr, &expr_type};
+                iter_expr = iter_expr->brother;
             }
-            else
+            iter_expr = root->child->child->brother;
+
+            while (iter_expr != NULL)
             {
-                root->sem_type = (struct symb_type){S_VECTOR, 0, NULL};
+                if (!compare_types(iter_expr->sem_type, root->child->child->sem_type))
+                {
+                    fprintf(stderr, "ERRVEC: VETTORE NON PROPRIAMENTE COSTRUITO\n");
+                    exit(-1);
+                }
+
+                iter_expr = iter_expr->brother;
             }
-
+            //Ho dovuto usare root->child->child->sem_type perche expr_type dava errorre
+            root->sem_type = (struct symb_type){S_VECTOR, n_expr, &(root->child->child->sem_type)};
             break;
-
-            /*case N_TVECTOR: //TODO: verificare se serve veramente per analisi semantica
-            break;*/
 
         case N_FUNC_CALL:
             bc_3 = find_in_chain(root->child->value.sval, &symbol_table[hash(root->child->value.sval)]);
@@ -422,12 +419,11 @@ void analizza(Pnode root, struct bucket symbtab[])
             root->sem_type.stipo = root->op_code == T_INTEGER ? S_INTEGER : S_REAL;
             break;
 
-        case N_ASSIGN_STAT: //FIXME: change for lhs
+        case N_ASSIGN_STAT:
 
             analizza(root->child, symbtab);
             analizza(root->child->brother, symbtab);
-            //FIXME: Usare magari compare_types
-            if (root->child->sem_type.stipo != root->child->brother->sem_type.stipo) //TODO: POsso assegnare vettori interni?
+            if (!compare_types(root->child->sem_type, root->child->brother->sem_type)) //TODO: Chiedere al Lampe POsso assegnare vettori interni?
             {
                 fprintf(stderr, "ERRORE: ASSEGNAMENTO NON CONSENTITO (TIPI DIFFERENTI)\n");
                 exit(-1);

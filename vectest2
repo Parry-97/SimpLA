@@ -1,4 +1,6 @@
-z,x,y: vector [5] of integer;
+z : vector [5] of integer;
+x,y: vector[2] of vector[5] of integer;
+
 i,j: integer;
 
 func copyvet(k: vector[5] of integer): vector [5] of integer
@@ -14,4 +16,5 @@ end;
 
 body
     z = vector(1,2,3,4,5);
+    x = vector(z,copyvet(z));
 end.

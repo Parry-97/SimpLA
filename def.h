@@ -48,7 +48,6 @@ struct symb_type
     struct symb_type *sub_type;
 };
 
-//TODO: aggiungere qualcosa per dimensione di vector singolo
 struct bucket
 {
     char *nome;
@@ -212,7 +211,7 @@ typedef struct snode
 {
     Typenode type;//TODO: magari cambiare nome in node_type
     Value value;
-    struct symb_type sem_type; //TODO: mi serve tutto symb_type o qualcosa di più semplice?-> NO serve tutto
+    struct symb_type sem_type; 
     int is_gen;
     int op_code;
     struct snode *child, *brother;

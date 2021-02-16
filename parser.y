@@ -142,7 +142,6 @@ stat : assign_stat {$$ = $1;}
      | func_call {$$ = $1;}
      | BREAK {$$ = keynode(T_BREAK);};
 
-//TODO: Sostituire con varname magari e verificare roba di idnode
 assign_stat : lhs ASSIGN expr {$$ = nontermnode(N_ASSIGN_STAT); $$->child = $1; $$->child->brother = $3;};
 
 lhs : ID {$$ = idnode();} | indexing {$$ = $1;};
