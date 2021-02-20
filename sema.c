@@ -6,7 +6,7 @@ extern struct bucket *symbol_table;
 struct symb_type return_type = (struct symb_type){S_VOID_, 1, NULL};
 int is_loop = 0;
 
-//FIXME: Maybe?
+
 bool compare_types(struct symb_type type1, struct symb_type type2)
 {
     if (type1.dim != type2.dim)
@@ -36,7 +36,7 @@ void find_index_in_statlist(char *id, Pnode node)
 
     switch (node->value.ival)
     {
-        //TODO: lhs non hanno piu un reference a un id: PROBLEMA?
+        //lhs non hanno piu un reference a un id: PROBLEMA?
     case N_ASSIGN_STAT:
 
         if (node->child->type != T_ID)
@@ -283,10 +283,10 @@ void analizza(Pnode root, struct bucket symbtab[])
             break;
 
         case N_LHS:
-            //TODO: RIVEDERE
+            
             analizza(root->child, symbtab);
             analizza(root->child->brother, symbtab);
-            
+
             if (root->child->type == T_ID)
             {
                 bc_6 = find_index_in_env(root->child->value.sval, symbtab);

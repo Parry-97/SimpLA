@@ -111,7 +111,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             Operator op = decl_type.stipo == S_VECTOR ? VEC : VARI;
 
             int num;
-            num = conta_fratelli(p->child->child); //TODO: CHECK
+            num = conta_fratelli(p->child->child); //CHECK
 
             for (int i = 0; i < num; i++)
             {
@@ -122,7 +122,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 //speciale in cui tutti gli elementi del vettore sono inseriti vicini tra di loro. IXA è top perche a seconda dell'elem size
                 // che gli dò lui indicizza non solo elementi atomici ma anche interi vettori. Le celle datamem o stacknode storano puntatori a
                 //celle di instance stack.
-                *prog = appcode(*prog, makecode1(op, get_type_size(decl_type))); //TODO: CHECK CAREFULLY
+                *prog = appcode(*prog, makecode1(op, get_type_size(decl_type))); //CHECK CAREFULLY
             }
 
             p->is_gen = 1;
@@ -155,8 +155,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             {
                 generateCode(p->child, symbtab, prog);
                 //prog->last = newstat(IST);
-                removeEIL_withIST(prog); //FIXME: farla meglio perchè secondo me scombussoli
-                                         //qualcosa con le stat , i num, gli 'indirizzi' e gli appcode buggano
+                removeEIL_withIST(prog);
             }
 
             p->is_gen = 1;
@@ -170,7 +169,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 vec_expr = vec_expr->brother;
             }
 
-            //TODO: Check perchè ha 2 argomenti sto CAT
+            
             *prog = appcode(*prog, makecode2(CAT, conta_fratelli(p->child->child), conta_fratelli(p->child->child) * p->child->child->sem_type.dim));
             p->is_gen = 1;
             break;
@@ -179,7 +178,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             //Ovviamente devo differenziare se è un id o un'op di indexing
             generateCode(p->child, symbtab, prog);
             generateCode(p->child->brother, symbtab, prog);
-            //FIXME: Problema con gli IXA nel caso di self-indexing.Il fatto che p->child->sem_type.dim = 0 o 1 non va bene
+            
             int type_size = p->child->sem_type.sub_type == NULL ? 1 : get_type_size(*(p->child->sem_type.sub_type));
             *prog = appcode(*prog, makecode1(IXA, type_size)); //Calcola indirizzo e lo metto in cima alla pila
             if (p->sem_type.stipo != S_VECTOR)
@@ -187,7 +186,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 *prog = appcode(*prog, makecode(EIL));
             }
 
-            //FIXME: Capire come mettere sto EIL, perche Lampe forse intende usarlo solo per elem atomici (Usare VIL?)
+            //       Capire come mettere sto EIL, perche Lampe forse intende usarlo solo per elem atomici (Usare VIL?)
             //       Così ccome l'ho fatto almeno è una definizione abbastanza ricorsiva e ci sta secondo me
             //       Ma perchè il Lampe fa infatti la distinzione tra |int| o |string| mentre nel mio caso sono uguali a
             //       1 cella come dimensione quindi sarebbe un'informazione ridondante.
@@ -453,7 +452,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
         case N_READ_STAT:
 
-            nume = conta_fratelli(p->child->child); //TODO:CHECK
+            nume = conta_fratelli(p->child->child); //:CHECK
             Pnode cont;
             cont = p->child->child;
 
@@ -485,7 +484,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             count_expr = p->child->brother->child;
             int num_expr;
-            num_expr = conta_fratelli(count_expr); //TODO: CHECK
+            num_expr = conta_fratelli(count_expr); //: CHECK
 
             char *write_format = (char *)malloc(sizeof(char) * 25);
 
@@ -515,7 +514,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             if (expr_list != NULL)
             {
                 count_bro = expr_list->child;
-                num_formals = conta_fratelli(count_bro); //TODO: CHECK
+                num_formals = conta_fratelli(count_bro); //: CHECK
 
                 while (count_bro != NULL)
                 {
@@ -817,7 +816,7 @@ void relocate_address(struct SCode code, int offset)
 
     for (i = 1; i <= code.num; i++)
     {
-        p->address += offset; //FIXME: boh p è NULL
+        p->address += offset;
         p = p->next;
     }
 }
@@ -968,7 +967,7 @@ struct SCode make_lcs(char *s)
     return code;
 }
 
-char *get_format(struct symb_type txpe) //TODO: Safely delete
+char *get_format(struct symb_type txpe)
 {
     switch (txpe.stipo)
     {
@@ -993,7 +992,7 @@ char *get_format(struct symb_type txpe) //TODO: Safely delete
     }
 }
 
-int get_type_size(struct symb_type decl_type) //FIXME: cambia per avere dimensioni totali del vettore in celle()
+int get_type_size(struct symb_type decl_type) //cambia per avere dimensioni totali del vettore in celle()
 //ad es: vector [3] of vector[5] of vector [7] of integer => vec-size = 3*5*7*1 = 105 celle (elem atomici hanno dim = 1)
 {
 
@@ -1042,5 +1041,5 @@ void generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog)
     }
     oid = bc->oid;
     op = bc->bucket_type.stipo == S_VECTOR ? LDA : LOD;
-    *prog = appcode(*prog, makecode2(op, env, oid)); //TODO: per vettori lui usa LDA..boh..check
+    *prog = appcode(*prog, makecode2(op, env, oid)); //per vettori lui usa LDA
 }

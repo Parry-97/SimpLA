@@ -291,7 +291,7 @@ int conta_fratelli(Pnode fratello),
     isAEmpty(struct Astack *root),
     isOEmpty(struct Ostack *root);
 
-char *get_format(struct symb_type txpe); //TODO: togliere in quanto non servirà
+char *get_format(struct symb_type txpe);
 
 void treeprint(Pnode, int),
     analizza(Pnode root, struct bucket symbtab[]),
