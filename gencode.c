@@ -11,6 +11,7 @@ int oidl;
 int is_break = 0;
 int is_return = 0;
 Pnode expr_list;
+//magari potrei riusare quella sopra
 
 void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 {
@@ -24,6 +25,8 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
     struct SCode math_code, cast_code, *while_expr;
     Pnode count_expr, count_bro, cont_stat, cont_stat2, cont_stat3;
     struct symb_type decl_type;
+
+    Pnode vec_expr;
 
     struct bucket *func_bc;
 
@@ -104,15 +107,22 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
 
         case N_VAR_DECL:
-            //TODO: cancellare typeSize..inutile
             decl_type = p->child->brother->sem_type;
-            
+            Operator op = decl_type.stipo == S_VECTOR ? VEC : VARI;
+
             int num;
             num = conta_fratelli(p->child->child); //TODO: CHECK
 
             for (int i = 0; i < num; i++)
             {
-                *prog = appcode(*prog, makecode1(VARI, decl_type.dim)); //TODO: CHECK
+                //IN caso di vettori calcolo la dimensione del vettore rispetto a quanti elementi atomici contiene
+                // o quante celle di instance stack  mi serviranno per memorizzare i suoi elementi: TOP
+                //instance è fatto di celle come datamem  , ma che memorizzano SOLO elementi atomici  sono messi 'a blocchi' o sequenzialmente per ogni vettore
+                //memorizzo il puntatore al primo elemento e poi gli altri saranno quelli vicini. Ci sta l'idea di uno stack
+                //speciale in cui tutti gli elementi del vettore sono inseriti vicini tra di loro. IXA è top perche a seconda dell'elem size
+                // che gli dò lui indicizza non solo elementi atomici ma anche interi vettori. Le celle datamem o stacknode storano puntatori a
+                //celle di instance stack.
+                *prog = appcode(*prog, makecode1(op, get_type_size(decl_type))); //TODO: CHECK CAREFULLY
             }
 
             p->is_gen = 1;
@@ -120,23 +130,67 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
         case N_ASSIGN_STAT:
             generateCode(p->child->brother, symbtab, prog);
-
-            char *id = p->child->value.sval;
-
-            int env, oid;
-            struct bucket *id_bucket = find_in_chain_senza_errore(id, &symbtab[hash(id)]);
-
-            env = symbtab == symbol_table ? 0 : 1;
-            if (id_bucket == NULL)
+            if (p->child->type == T_ID)
             {
-                id_bucket = find_in_chain(id, &symbol_table[hash(id)]);
-                env = 0;
+                /* code */
+
+                char *id = p->child->value.sval;
+
+                int env, oid;
+                struct bucket *id_bucket = find_in_chain_senza_errore(id, &symbtab[hash(id)]);
+
+                env = symbtab == symbol_table ? 0 : 1;
+                if (id_bucket == NULL)
+                {
+                    id_bucket = find_in_chain(id, &symbol_table[hash(id)]);
+                    env = 0;
+                }
+
+                oid = id_bucket->oid;
+                struct SCode sto_code = makecode2(STO, env, oid);
+
+                *prog = appcode(*prog, sto_code);
+            }
+            else
+            {
+                generateCode(p->child, symbtab, prog);
+                //prog->last = newstat(IST);
+                removeEIL_withIST(prog); //FIXME: farla meglio perchè secondo me scombussoli
+                                         //qualcosa con le stat , i num, gli 'indirizzi' e gli appcode buggano
             }
 
-            oid = id_bucket->oid;
-            struct SCode sto_code = makecode2(STO, env, oid);
+            p->is_gen = 1;
+            break;
 
-            *prog = appcode(*prog, sto_code);
+        case N_VEC_CONSTR:
+            vec_expr = p->child->child;
+            while (vec_expr != NULL)
+            {
+                generateCode(vec_expr, symbtab, prog);
+                vec_expr = vec_expr->brother;
+            }
+
+            //TODO: Check perchè ha 2 argomenti sto CAT
+            *prog = appcode(*prog, makecode2(CAT, conta_fratelli(p->child->child), conta_fratelli(p->child->child) * p->child->child->sem_type.dim));
+            p->is_gen = 1;
+            break;
+
+        case N_LHS:
+            //Ovviamente devo differenziare se è un id o un'op di indexing
+            generateCode(p->child, symbtab, prog);
+            generateCode(p->child->brother, symbtab, prog);
+            //FIXME: Problema con gli IXA nel caso di self-indexing.Il fatto che p->child->sem_type.dim = 0 o 1 non va bene
+            int type_size = p->child->sem_type.sub_type == NULL ? 1 : get_type_size(*(p->child->sem_type.sub_type));
+            *prog = appcode(*prog, makecode1(IXA, type_size)); //Calcola indirizzo e lo metto in cima alla pila
+            if (p->sem_type.stipo != S_VECTOR)
+            {
+                *prog = appcode(*prog, makecode(EIL));
+            }
+
+            //FIXME: Capire come mettere sto EIL, perche Lampe forse intende usarlo solo per elem atomici (Usare VIL?)
+            //       Così ccome l'ho fatto almeno è una definizione abbastanza ricorsiva e ci sta secondo me
+            //       Ma perchè il Lampe fa infatti la distinzione tra |int| o |string| mentre nel mio caso sono uguali a
+            //       1 cella come dimensione quindi sarebbe un'informazione ridondante.
             p->is_gen = 1;
             break;
 
@@ -260,6 +314,10 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                     *prog = appcode(*prog, makecode(LES));
                     break;
                 }
+                break;
+
+            case T_IN:
+                *prog = appcode(*prog, makecode(VIN));
                 break;
             }
 
@@ -709,6 +767,19 @@ void correct_returns(struct SCode *func_body)
     }
 }
 
+void removeEIL_withIST(struct SCode *prog) {
+
+    struct Stat *p = prog->first;
+    for (int i = 0; i < prog->num-2; i++)
+    {
+        p = p->next;
+    }
+    p->next = newstat(IST);
+    p->next->address += prog->num - 1;
+    prog->last = p->next;
+
+}
+
 int get_func_num_variables(char *id)
 {
     struct bucket *bc = find_in_chain(id, &symbol_table[hash(id)]);
@@ -746,7 +817,7 @@ void relocate_address(struct SCode code, int offset)
 
     for (i = 1; i <= code.num; i++)
     {
-        p->address += offset;
+        p->address += offset; //FIXME: boh p è NULL
         p = p->next;
     }
 }
@@ -897,7 +968,7 @@ struct SCode make_lcs(char *s)
     return code;
 }
 
-char *get_format(struct symb_type txpe) //TODO: Safely delete 
+char *get_format(struct symb_type txpe) //TODO: Safely delete
 {
     switch (txpe.stipo)
     {
@@ -917,32 +988,22 @@ char *get_format(struct symb_type txpe) //TODO: Safely delete
         break;
 
     default:
-        fprintf(stderr,"ERRORE: NON è POSSIBILE STAMPARE DATI VOID\n");
+        fprintf(stderr, "ERRORE: NON è POSSIBILE STAMPARE DATI VOID\n");
         exit(-1);
     }
 }
 
-int get_type_size(Typenode type) //TODO: togliere in modo sicuro
+int get_type_size(struct symb_type decl_type) //FIXME: cambia per avere dimensioni totali del vettore in celle()
+//ad es: vector [3] of vector[5] of vector [7] of integer => vec-size = 3*5*7*1 = 105 celle (elem atomici hanno dim = 1)
 {
 
-    switch (type)
+    if (decl_type.stipo == S_VECTOR)
     {
-    case T_BOOLEAN:
-        return 4;
-        break;
-    case T_INTEGER:
-        return 4;
-        break;
-    case T_STRING:
-        return 16;
-        break;
-    case T_REAL:
-        return 8;
-        break;
-
-    default:
-        return 8;
-        break;
+        return decl_type.dim * get_type_size(*(decl_type.sub_type));
+    }
+    else
+    {
+        return 1;
     }
 }
 
@@ -971,6 +1032,7 @@ void generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog)
 {
     int oid;
     int env = symbtab == symbol_table ? 0 : 1;
+    Operator op;
 
     struct bucket *bc = find_in_chain_senza_errore(p->value.sval, &symbtab[hash(p->value.sval)]);
     if (bc == NULL)
@@ -979,5 +1041,6 @@ void generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog)
         env = 0;
     }
     oid = bc->oid;
-    *prog = appcode(*prog, makecode2(LOD, env, oid));
+    op = bc->bucket_type.stipo == S_VECTOR ? LDA : LOD;
+    *prog = appcode(*prog, makecode2(op, env, oid)); //TODO: per vettori lui usa LDA..boh..check
 }

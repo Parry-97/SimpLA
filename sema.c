@@ -283,32 +283,38 @@ void analizza(Pnode root, struct bucket symbtab[])
             break;
 
         case N_LHS:
-
+            //TODO: RIVEDERE
             analizza(root->child, symbtab);
+            analizza(root->child->brother, symbtab);
+            
             if (root->child->type == T_ID)
             {
                 bc_6 = find_index_in_env(root->child->value.sval, symbtab);
 
                 if (bc_6->classe == FUN)
                 {
-                    fprintf(stderr, "ERRORE: NON E' POSSIBILE INDICIZZARE UNA FUNZIONE\n");
+                    fprintf(stderr, "LHSERR: NON E' POSSIBILE INDICIZZARE UNA FUNZIONE\n");
                     exit(-1);
                 }
                 /* code */
+                root->sem_type = root->child->sem_type;
             }
 
             //tecnicamente potrei fare questo controllo con N_TVECTOR prima di arrivare qua
             if (root->child->sem_type.sub_type->stipo == S_VOID_)
             {
-                fprintf(stderr, "ERRORE: NON E' POSSIBILE CREARE VETTORI DI TIPO VOID\n");
+                fprintf(stderr, "LHSERR: NON E' POSSIBILE CREARE VETTORI DI TIPO VOID\n");
                 exit(-1);
             }
 
             if (root->child->sem_type.stipo == S_VECTOR && root->child->brother->sem_type.stipo == S_INTEGER)
             {
                 root->sem_type = *(root->child->sem_type.sub_type);
+            } else
+            {
+                fprintf(stderr, "LHSERR: ERRORE IN INDICIZZAZIONE\n");
+                exit(-1);
             }
-
             break;
 
         case N_VEC_CONSTR:

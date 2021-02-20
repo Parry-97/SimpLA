@@ -1,5 +1,5 @@
-z : vector [5] of integer;
-x,y: vector[2] of vector[5] of integer;
+z: vector [5] of integer;
+w,x,y: vector[2] of vector[5] of integer;
 
 i,j: integer;
 
@@ -9,7 +9,7 @@ retvec: vector [5] of integer;
 
 body
     for i = 0 to 5 do
-        retvec[i] = k[i];
+        write("ciao");
     end;
     return retvec;    
 end;
@@ -17,4 +17,7 @@ end;
 body
     z = vector(1,2,3,4,5);
     x = vector(z,copyvet(z));
+    w = x;
+
+    x[x[3][2]][3] = z[3];
 end.

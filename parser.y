@@ -322,9 +322,9 @@ int main(int argc, char **argv)
   current_env = symbol_table; 
   id_func = (char *)malloc(140);
   current_oid = &oid_g;
-  //sub_prog10 = (struct SCode *)malloc(sizeof(struct SCode));
-  //tot_prog = (struct SCode *)malloc(sizeof(struct SCode));
-  //current_prog = (struct SCode *)malloc(sizeof(struct SCode));
+  sub_prog10 = (struct SCode *)malloc(sizeof(struct SCode));
+  tot_prog = (struct SCode *)malloc(sizeof(struct SCode));
+  current_prog = (struct SCode *)malloc(sizeof(struct SCode));
   int result;
 
   for (int i = 0; i < SYMTAB_SIZE; i++)
@@ -337,7 +337,7 @@ int main(int argc, char **argv)
        fprintf(stderr,"ERRORE SIMPLAC: FILE NON ESISTE!");
        // Program exits if the file pointer returns NULL.
        exit(-1);
-   }
+    }
   }
   else {
       fprintf(stderr,"ERRORE SIMPLAC: INDICARE FILE DA COMPILARE");
@@ -354,7 +354,7 @@ int main(int argc, char **argv)
     
     analizza(root, symbol_table);
     
-    /*sub_prog10 = endcode();
+    *sub_prog10 = endcode();
     generateCode(root, symbol_table, sub_prog10);
     int size;
     size = sub_prog10->num;
@@ -363,11 +363,11 @@ int main(int argc, char **argv)
     *tot_prog = appcode(*tot_prog, makecode(STP));
     *tot_prog = appcode(*tot_prog,*sub_prog10);
 
-    printf("---- Compilazione di Codice SimpLA avvenuta con successo -----\n");
+    printf("\n✅✅✅✅ Compilazione di Codice SimpLA avvenuta con successo✅✅✅✅\n");
     //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
     codeprint(tot_prog);
 
-    char *s_filename = strcat(argv[1],".sim");
+    /* char *s_filename = strcat(argv[1],".sim");
     save_to_txt(tot_prog, s_filename);
 
     //printf("---- Test Code: -----\n");

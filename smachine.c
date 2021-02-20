@@ -66,7 +66,7 @@ void executeSCode(char *filename)
     current_mem = global_mem;
     current_stack = oroot;
     
-
+    //FIXME: Start Refactoring get_type_size() function according to new algo
     for (int i = 0;!end_of_program; i++)
     {
         switch (code_mem[i].op)

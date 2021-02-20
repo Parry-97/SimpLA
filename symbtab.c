@@ -177,7 +177,7 @@ struct bucket *init_bucket()
 {
     struct bucket *b = malloc(sizeof(struct bucket));
     //TODO: Rivedere
-    *b = (struct bucket){(char *)malloc(140), C_NULL, 0, (struct symb_type){T_NULL, 0, NULL}, (struct bucket *)malloc(100 * sizeof(struct bucket)), 0,(struct bucket **) calloc(20, sizeof(struct bucket*)), malloc(sizeof(struct bucket))};
+    *b = (struct bucket){(char *)malloc(140), C_NULL, 0, (struct symb_type){T_NULL, 1, NULL}, (struct bucket *)malloc(100 * sizeof(struct bucket)), 0,(struct bucket **) calloc(20, sizeof(struct bucket*)), malloc(sizeof(struct bucket))};
     b->nome = "";
     b->next = NULL;
     return b;

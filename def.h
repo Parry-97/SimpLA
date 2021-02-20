@@ -171,6 +171,13 @@ typedef enum
     RET,
     SIZ,
     STP,
+    VEC,
+    CAT,
+    IXA,
+    EIL,
+    LDA,
+    IST,
+    VIN,
     BRK,
     NIK
 } Operator;
@@ -276,7 +283,7 @@ struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc),
 int conta_fratelli(Pnode fratello),
     get_func_num_variables(char *id),
     count_var_in_chain(struct bucket *bc),
-    get_type_size(Typenode type),
+    get_type_size(struct symb_type decl_type),
     get_func_entry_point(struct SCode *prog, char *id),
     create_int_temp(struct bucket *env, int *oid_l),
     get_next_stats_num(Pnode nextstat),
@@ -300,7 +307,7 @@ void treeprint(Pnode, int),
     codeprint(struct SCode *prog),
     save_to_file(struct SCode *prog, char *filename),
     generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog),
-    relocateAddress(struct SCode code, int offset),
+    relocate_address(struct SCode code, int offset),
     generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog),
     apush(struct Astack *stack, struct Ostack *objects, int call_oid, struct data_mem *local_mem ,int num_objs, int ret_addr),
     opush(struct Ostack *stack, Value val, int size),
@@ -350,4 +357,5 @@ struct Stat *get_scode_from_txt(char *filename);
 bool compare_types(struct symb_type type1, struct symb_type type2);
 
 void save_to_txt(struct SCode *prog, char *filename),
-     get_args_from_str(struct Stat *pStat, char *str_args);
+     get_args_from_str(struct Stat *pStat, char *str_args),
+     removeEIL_withIST(struct SCode *prog);
