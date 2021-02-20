@@ -14,7 +14,7 @@ end;
 func stampaFattoriali(tot: integer): void
 	i, f: integer;
 body
-	f = fattoriale(tot,56);
+	f = fattoriale(tot);
 	writeln("Il fattoriale di ", tot, " è ", f);
 end;
 

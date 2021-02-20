@@ -348,7 +348,7 @@ int main(int argc, char **argv)
 
   if ((result = yyparse()) == 0) {
     //Togliere commento sulla funzione treeprint per visualizzare l'albero sintattico astratto a video
-    treeprint(root, 0);
+    //treeprint(root, 0);
 
     //print_symbol_table(symbol_table);
     

@@ -66,24 +66,13 @@ void executeSCode(char *filename)
     current_mem = global_mem;
     current_stack = oroot;
     
-    //FIXME: Start Refactoring get_type_size() function according to new algo
     for (int i = 0;!end_of_program; i++)
     {
         switch (code_mem[i].op)
         {
 
         case VARI:
-            //TODO: fare magari un metodo a parte
-            //      non credo mi serve effettivamente memorizzare le dim dei dati ma solo
-            //      distinguere se sono vettori(dim > 1) o atomici(dim = 1) e agire di conseguenza
-
-            //TODO: devo passare i refs dei prossimi elementi a un datamem
-            //      e mettere nel val.mval(un possibile void pointer) la ref di questa sub datamem
-
-            /** Alla fine qua sto facendo distinzione se sono in mem locale o meno
-             * e sto inserendo nel datamem il tipo del dato sebbene sia un'po inutile
-             * Nel caso del vettore inizializzo la var nella current mem mentre i suoi elementi
-             * li devo gestire in altro modo*/
+            
             if (!env)
             {
                 global_mem[global_obj_id++].size = code_mem[i].args[0].ival;
@@ -96,11 +85,11 @@ void executeSCode(char *filename)
             break;
 
         case LCI:
-            opush(current_stack, code_mem[i].args[0], get_type_size(T_INTEGER));
+            opush(current_stack, code_mem[i].args[0], 1);
             break;
 
         case LCR:
-            opush(current_stack, code_mem[i].args[0], get_type_size(T_REAL));
+            opush(current_stack, code_mem[i].args[0], 1);
             break;
 
         case LCS:
@@ -114,7 +103,7 @@ void executeSCode(char *filename)
             {
                 string_table[hash(code_mem[i].args[0].sval)] = code_mem[i].args[0].sval;
             }
-            opush(current_stack, code_mem[i].args[0], get_type_size(T_STRING));
+            opush(current_stack, code_mem[i].args[0], 1);
             break;
 
         case LOD:
@@ -174,7 +163,7 @@ void executeSCode(char *filename)
                 ris.bval = node1.val.sval == node2.val.sval ? 1 : 0;
             }
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case NEQ:
@@ -194,7 +183,7 @@ void executeSCode(char *filename)
                 ris.bval = node1.val.sval != node2.val.sval ? 1 : 0;
             }
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case GTI:
@@ -203,7 +192,7 @@ void executeSCode(char *filename)
 
             ris.bval = num2 > num1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case GEI:
@@ -212,7 +201,7 @@ void executeSCode(char *filename)
 
             ris.bval = num2 >= num1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case LTI:
@@ -221,7 +210,7 @@ void executeSCode(char *filename)
 
             ris.bval = num2 < num1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case LEI:
@@ -230,7 +219,7 @@ void executeSCode(char *filename)
 
             ris.bval = num2 <= num1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
 
             break;
 
@@ -240,7 +229,7 @@ void executeSCode(char *filename)
 
             ris.bval = num_f2 > num_f1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
 
             break;
 
@@ -250,7 +239,7 @@ void executeSCode(char *filename)
 
             ris.bval = num_f2 >= num_f1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
 
         case LTR:
@@ -259,7 +248,7 @@ void executeSCode(char *filename)
 
             ris.bval = num_f2 < num_f1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
 
         case LER:
@@ -268,14 +257,14 @@ void executeSCode(char *filename)
 
             ris.bval = num_f2 <= num_f1 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
         case GTS:
             s1 = opop(current_stack).val.sval;
             s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s2,s1) > 0 ? 1 : 0;
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case GES:
@@ -284,7 +273,7 @@ void executeSCode(char *filename)
 
             ris.bval = strcmp(s2, s1) >= 0 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case LTS:
@@ -292,7 +281,7 @@ void executeSCode(char *filename)
             s2 = opop(current_stack).val.sval;
 
             ris.bval = strcmp(s2,s1) < 0 ? 1 : 0;
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case LES:
@@ -301,7 +290,7 @@ void executeSCode(char *filename)
 
             ris.bval = strcmp(s2,s1) <= 0 ? 1 : 0;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case ADI:
@@ -310,7 +299,7 @@ void executeSCode(char *filename)
 
             ris.ival = num2 + num1;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case SBI:
@@ -319,7 +308,7 @@ void executeSCode(char *filename)
 
             ris.ival = num2 - num1;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case MUI:
@@ -328,7 +317,7 @@ void executeSCode(char *filename)
 
             ris.ival = num2 * num1;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case DVI:
@@ -337,7 +326,7 @@ void executeSCode(char *filename)
 
             ris.ival = (int)(num2 / num1);
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris,1);
             break;
 
         case ADR:
@@ -346,7 +335,7 @@ void executeSCode(char *filename)
 
             ris.fval = num_f2 + num_f1;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
 
         case SBR:
@@ -355,7 +344,7 @@ void executeSCode(char *filename)
 
             ris.fval = num_f2 - num_f1;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
 
         case MUR:
@@ -364,7 +353,7 @@ void executeSCode(char *filename)
 
             ris.fval = num_f2 * num_f1;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
 
         case DVR:
@@ -373,7 +362,7 @@ void executeSCode(char *filename)
 
             ris.fval = num_f2 / num_f1;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
 
         case UMI:
@@ -381,7 +370,7 @@ void executeSCode(char *filename)
 
             ris.ival = -num1;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case UMR:
@@ -389,7 +378,7 @@ void executeSCode(char *filename)
 
             ris.fval = -num_f1;
 
-            opush(current_stack, ris, get_type_size(T_REAL));
+            opush(current_stack, ris, 1);
             break;
 
         case NEG:
@@ -397,7 +386,7 @@ void executeSCode(char *filename)
 
             ris.bval = num2 ? 0 : 1;
 
-            opush(current_stack, ris, get_type_size(T_INTEGER));
+            opush(current_stack, ris, 1);
             break;
 
         case PSH:
@@ -430,7 +419,7 @@ void executeSCode(char *filename)
             ovalue = opop(current_stack).val;
             Value toi;
             toi.ival = (int)ovalue.fval;
-            opush(current_stack, toi, get_type_size(T_INTEGER));
+            opush(current_stack, toi, 1);
 
             break;
 
@@ -438,7 +427,7 @@ void executeSCode(char *filename)
             ovalue = opop(current_stack).val;
             Value tor;
             tor.fval = (float)ovalue.ival;
-            opush(current_stack, tor, get_type_size(T_REAL));
+            opush(current_stack, tor, 1);
             break;
 
         case INP:

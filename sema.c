@@ -213,8 +213,8 @@ void analizza(Pnode root, struct bucket symbtab[])
                 exit(-1);
             }
 
-            root->sem_type.stipo = S_BOOLEAN_; //TODO: make sure not gives SIGSEV
-
+            //TODO: make sure not gives SIGSEV
+            root->sem_type = (struct symb_type){S_BOOLEAN_, 1, NULL};
             break;
 
         case N_REL_EXPR:
@@ -240,7 +240,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 fprintf(stderr, "RELERR3: CONDIZIONE RELAZIONALE ERRATA\n");
                 exit(-1);
             }
-            root->sem_type.stipo = S_BOOLEAN_;
+            root->sem_type = (struct symb_type){S_BOOLEAN_,1,NULL};
 
             break;
 
@@ -406,6 +406,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
         case N_CASTING:
             analizza(root->child, symbtab);
+            //FIXME
             if (root->child->sem_type.stipo != S_INTEGER && root->child->sem_type.stipo != S_REAL)
             {
                 /* code */
@@ -422,7 +423,8 @@ void analizza(Pnode root, struct bucket symbtab[])
                 fprintf(stderr, "ERRORE: CASTING SUPERFLUO\n");
                 exit(-1);
             }
-            root->sem_type.stipo = root->op_code == T_INTEGER ? S_INTEGER : S_REAL;
+            int tipos = root->op_code == T_INTEGER ? S_INTEGER : S_REAL;
+            root->sem_type = (struct symb_type){tipos, 1, NULL};
             break;
 
         case N_ASSIGN_STAT:
