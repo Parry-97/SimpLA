@@ -7,4 +7,6 @@ parser.h
 parser.output
 parser.c
 .vscode
-bup
+simplac
+simplavm
+task.md

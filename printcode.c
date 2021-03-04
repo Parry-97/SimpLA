@@ -156,7 +156,7 @@ char *print_args(struct Stat stat)
     case SIZ:
         sprintf(str_args, "%s %d", codeops[stat.op], stat.args[0].ival);
         break;
-
+    
     default:
         sprintf(str_args, "%s", codeops[stat.op]);
         break;

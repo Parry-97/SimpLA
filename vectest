@@ -2,27 +2,24 @@ numeri: vector [7] of integer;
 matrice: vector[3] of vector [5] of integer;
 riga: vector[5] of integer;
 
-i : integer; 
+i,j : integer;
 body
     numeri = vector(5,29,13,25,67,123,6);
-    i = 3;
+    write("Inserisci Numero per i :");
+    read(i);
 
     
     matrice = vector(vector(1,2,3,4,5),
                      vector(2,4,6,8,10),
                      vector(3,6,9,12,3*32+i));
-    riga = matrice[3];
+    riga = matrice[2];
 
-    if 5 in numeri then
-        write("5 è stato trovato");
-    end;
+    writeln("elemento 1 in riga: ",riga[4]);
 
-    if matrice[6][2] == 6 then
-        writeln("Matrice mal condizionata");    
-    end;                 
-
-    if matrice[matrice[1][2]][numeri[2]] == 9 and true then
-        read(i);
-    end;
+    for i = 0 to 2 do
+        for j = 0 to 4 do 
+            writeln("matrice [",i,"][",j,"] : ", matrice[i][j]);
+        end;
+    end;    
 
 end.

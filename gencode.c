@@ -1,12 +1,11 @@
+
 #include <stdlib.h>
 #include "string.h"
 #include "def.h"
 
-extern int oid_g;
-extern struct bucket *symbol_table;
 
+extern struct bucket *symbol_table;
 extern struct SCode *current_prog;
-int oidl;
 
 int is_break = 0;
 int is_return = 0;
@@ -110,6 +109,8 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             decl_type = p->child->brother->sem_type;
             Operator op = decl_type.stipo == S_VECTOR ? VEC : VARI;
 
+            int var_size = op == VEC ? get_type_size(decl_type) : decl_type.stipo;
+
             int num;
             num = conta_fratelli(p->child->child); //CHECK
 
@@ -122,7 +123,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 //speciale in cui tutti gli elementi del vettore sono inseriti vicini tra di loro. IXA è top perche a seconda dell'elem size
                 // che gli dò lui indicizza non solo elementi atomici ma anche interi vettori. Le celle datamem o stacknode storano puntatori a
                 //celle di instance stack.
-                *prog = appcode(*prog, makecode1(op, get_type_size(decl_type))); //CHECK CAREFULLY
+                *prog = appcode(*prog, makecode1(op, var_size)); //CHECK CAREFULLY
             }
 
             p->is_gen = 1;
@@ -169,7 +170,6 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 vec_expr = vec_expr->brother;
             }
 
-            
             *prog = appcode(*prog, makecode2(CAT, conta_fratelli(p->child->child), conta_fratelli(p->child->child) * p->child->child->sem_type.dim));
             p->is_gen = 1;
             break;
@@ -178,7 +178,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             //Ovviamente devo differenziare se è un id o un'op di indexing
             generateCode(p->child, symbtab, prog);
             generateCode(p->child->brother, symbtab, prog);
-            
+
             int type_size = p->child->sem_type.sub_type == NULL ? 1 : get_type_size(*(p->child->sem_type.sub_type));
             *prog = appcode(*prog, makecode1(IXA, type_size)); //Calcola indirizzo e lo metto in cima alla pila
             if (p->sem_type.stipo != S_VECTOR)
@@ -623,8 +623,18 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             generateCode(p->child->brother->brother, symbtab, prog);
 
-            int oid3 = create_int_temp(symbtab, &oidl);
             int env3 = symbtab == symbol_table ? 0 : 1;
+            if (env3)
+            {
+                /* code */
+                oidl++;
+            } else
+            {
+                oid_g++;
+            }
+
+            int oid3 = create_int_temp2(symbtab, oidl);
+            printf("oid3 temporaneo è %d\n", oid3);
 
             *prog = appcode(*prog, makecode2(STO, env3, oid3));
             *prog = appcode(*prog, makecode2(LOD, env2, oid2));
@@ -766,17 +776,17 @@ void correct_returns(struct SCode *func_body)
     }
 }
 
-void removeEIL_withIST(struct SCode *prog) {
+void removeEIL_withIST(struct SCode *prog)
+{
 
     struct Stat *p = prog->first;
-    for (int i = 0; i < prog->num-2; i++)
+    for (int i = 0; i < prog->num - 2; i++)
     {
         p = p->next;
     }
     p->next = newstat(IST);
     p->next->address += prog->num - 1;
     prog->last = p->next;
-
 }
 
 int get_func_num_variables(char *id)
@@ -973,18 +983,15 @@ char *get_format(struct symb_type txpe)
     {
     case S_REAL:
         return "r";
-        break;
+
     case S_INTEGER:
         return "i";
-        break;
 
     case S_BOOLEAN_:
         return "b";
-        break;
 
     case S_STRING:
         return "s";
-        break;
 
     default:
         fprintf(stderr, "ERRORE: NON è POSSIBILE STAMPARE DATI VOID\n");

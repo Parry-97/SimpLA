@@ -26,6 +26,17 @@ int isOFull(struct Ostack *stack)
 }
 
 
+int opush_batch(struct Ostack *istack, int batch_size) {
+
+    Value val;
+    for (int i = 0; i < batch_size; i++)
+    {
+        opush(istack, val, 1);
+    }
+    return istack->top - batch_size + 1;
+}
+
+//FIXME metter come parametro il s_type?!
 void opush(struct Ostack *ostack, Value val, int size)
 {
     struct Ostack_node stackNode = newONode();
@@ -33,6 +44,23 @@ void opush(struct Ostack *ostack, Value val, int size)
     stackNode.size = size;
     if (isOFull(ostack)) {
         fprintf(stderr,"FATAL ERROR: Object Stack Overflow\n");
+        exit(-1);
+    }
+
+    ostack->stack[++ostack->top] = stackNode;
+    
+}
+
+void opush_t(struct Ostack *ostack, Value val, int size, s_type stipo)
+{
+    struct Ostack_node stackNode = newONode();
+    stackNode.val = val;
+    stackNode.size = size;
+    stackNode.tipo = stipo;
+
+    if (isOFull(ostack))
+    {
+        fprintf(stderr, "FATAL ERROR: Object Stack Overflow\n");
         exit(-1);
     }
 

@@ -1,14 +1,23 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
 #define SHIFT 4
 #define MAXARGS 3
-#define SYMTAB_SIZE 2999
+#define SYMTAB_SIZE 256
 
 struct bucket *symbol_table;
 struct SCode *tot_prog;
 struct SCode *current_prog;
+
+#if !defined(OIDS)
+#define OIDS
+
+extern int oid_g;
+extern int oidl;
+
+#endif // OIDS
 
 typedef enum
 {
@@ -35,11 +44,11 @@ struct param_formali
     struct bucket **descr;
 };
 
-union symb_env {
-    struct bucket *local_env; 
-    bool need_env; 
+union symb_env
+{
+    struct bucket *local_env;
+    bool need_env;
 };
-
 
 struct symb_type
 {
@@ -59,9 +68,7 @@ struct bucket
     struct bucket *next;
 };
 
-
-
-typedef enum 
+typedef enum
 {
     N_PROGRAM,
     N_VAR_DECL_LIST,
@@ -121,7 +128,7 @@ typedef enum
     T_MINUS,
     T_MUL,
     T_DIV,
-    T_IN 
+    T_IN
 } Typenode;
 
 typedef enum
@@ -182,13 +189,21 @@ typedef enum
     NIK
 } Operator;
 
-
+//TODO: O estengo questa o faccio un 'altra union per gli stack...
 typedef union
 {
     int ival;
     char *sval;
-    enum {FALSE, TRUE} bval;
+    enum
+    {
+        FALSE,
+        TRUE
+    } bval;
     float fval;
+    int vec_p; //sara un puntatore al primo elemento stacknode
+               //di un vettore o sottovettore..poi la VM si gestisce l'indexing
+               //ma magari metto solo indice intero del primo elemento!! essendo
+               //lo 'stack' un array->è efficiente
 } Value;
 
 struct data_mem
@@ -196,6 +211,7 @@ struct data_mem
     char *id;
     Value val;
     int size;
+    s_type tipo;
 };
 
 struct Stat
@@ -206,9 +222,8 @@ struct Stat
     struct Stat *next;
 };
 
-
-
-struct SCode{
+struct SCode
+{
     struct Stat *first;
     int num;
     struct Stat *last;
@@ -216,9 +231,9 @@ struct SCode{
 
 typedef struct snode
 {
-    Typenode type;//TODO: magari cambiare nome in node_type
+    Typenode type; //TODO: magari cambiare nome in node_type
     Value value;
-    struct symb_type sem_type; 
+    struct symb_type sem_type;
     int is_gen;
     int op_code;
     struct snode *child, *brother;
@@ -228,11 +243,12 @@ typedef Node *Pnode;
 
 struct Ostack_node
 {
-    int size;
+    int size; //alla fine sarà sempre uguale a 1
     Value val;
+    s_type tipo;
 };
 
-struct Ostack 
+struct Ostack
 {
     int top;
     unsigned capacity;
@@ -250,6 +266,7 @@ struct Astack_node
 {
     int num_objs;
     struct Ostack *objects;
+    struct Ostack *vec_elems;
     int ret_addr;
     int call_oid;
     struct data_mem *local_mem;
@@ -257,28 +274,28 @@ struct Astack_node
 };
 
 char *newstring(char *),
-     *remove_quotes(char *),
-     *print_args(struct Stat stat);
+    *remove_quotes(char *),
+    *print_args(struct Stat stat);
 
 int yylex(),
     count_var(struct bucket *table),
     hash(const char *id);
 
-Pnode nontermnode(Nonterminal), 
-      idnode(), 
-      keynode(Typenode), 
-      intconstnode(),
-      strconstnode(),
-      boolconstnode(),
-      newnode(Typenode),
-      realconstnode();
+Pnode nontermnode(Nonterminal),
+    idnode(),
+    keynode(Typenode),
+    intconstnode(),
+    strconstnode(),
+    boolconstnode(),
+    newnode(Typenode),
+    realconstnode();
 
 struct param_formali init_pf(int numero_param);
 
-struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc), 
-              *init_bucket(),
-              *find_in_chain(char *id, struct bucket *bc),
-              *init_symbol_table(int num);
+struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc),
+    *init_bucket(),
+    *find_in_chain(char *id, struct bucket *bc),
+    *init_symbol_table(int num);
 
 int conta_fratelli(Pnode fratello),
     get_func_num_variables(char *id),
@@ -286,10 +303,13 @@ int conta_fratelli(Pnode fratello),
     get_type_size(struct symb_type decl_type),
     get_func_entry_point(struct SCode *prog, char *id),
     create_int_temp(struct bucket *env, int *oid_l),
+    create_int_temp2(struct bucket *env, int oid_l),
     get_next_stats_num(Pnode nextstat),
     add_temp_in_chain(struct bucket *bc, int *oid_l),
+    add_temp_in_chain2(struct bucket *bc, int oid_l),
     isAEmpty(struct Astack *root),
-    isOEmpty(struct Ostack *root);
+    isOEmpty(struct Ostack *root),
+    opush_batch(struct Ostack *istack, int batch_size);
 
 char *get_format(struct symb_type txpe);
 
@@ -309,8 +329,9 @@ void treeprint(Pnode, int),
     generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog),
     relocate_address(struct SCode code, int offset),
     generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog),
-    apush(struct Astack *stack, struct Ostack *objects, int call_oid, struct data_mem *local_mem ,int num_objs, int ret_addr),
+    apush(struct Astack *stack, struct Ostack *objects, struct Ostack *vec_elems, int call_oid, struct data_mem *local_mem, int num_objs, int ret_addr),
     opush(struct Ostack *stack, Value val, int size),
+    opush_t(struct Ostack *ostack, Value val, int size, s_type stipo),
     executeSCode(char *filename),
     correct_breaks(struct SCode *prog),
     correct_returns(struct SCode *prog);
@@ -349,7 +370,6 @@ int isFull(struct Ostack *stack);
 struct Ostack_node opeek(struct Ostack *ostack);
 struct Astack_node apeek(struct Astack *astack);
 
-
 char *save_args(struct Stat stat);
 
 struct Stat *get_scode_from_txt(char *filename);
@@ -357,5 +377,5 @@ struct Stat *get_scode_from_txt(char *filename);
 bool compare_types(struct symb_type type1, struct symb_type type2);
 
 void save_to_txt(struct SCode *prog, char *filename),
-     get_args_from_str(struct Stat *pStat, char *str_args),
-     removeEIL_withIST(struct SCode *prog);
+    get_args_from_str(struct Stat *pStat, char *str_args),
+    removeEIL_withIST(struct SCode *prog);

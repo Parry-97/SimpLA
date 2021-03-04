@@ -1,10 +1,14 @@
 #include "def.h"
 #include "string.h"
 
-
+int oidl = 0;
 int oid_g = 0;
 
 int create_int_temp(struct bucket *env, int *oid_l) {
+    int returned_oid;
+
+    printf("oidl param della funzione %d\n", *oid_l);
+    
     if (env[SYMTAB_SIZE - 1].oid == 0)
     {
         env[SYMTAB_SIZE - 1].nome = NULL;
@@ -17,13 +21,56 @@ int create_int_temp(struct bucket *env, int *oid_l) {
         {
             env[SYMTAB_SIZE - 1].oid = ++oid_g;
         }
-        
-        return env[SYMTAB_SIZE - 1].oid;
+        returned_oid = env[SYMTAB_SIZE - 1].oid;
+        return returned_oid;
     }
-    
+
     int chain_oid = env == symbol_table? oid_g: *oid_l;
 
-    return add_temp_in_chain(env[SYMTAB_SIZE - 1].next, &chain_oid);
+    returned_oid =  add_temp_in_chain(env[SYMTAB_SIZE - 1].next, &chain_oid);
+    return returned_oid;
+}
+
+int create_int_temp2(struct bucket *env, int oid_l) {
+    int returned_oid;
+
+    printf("oidl param della funzione %d\n", oid_l);
+
+    if (env[SYMTAB_SIZE - 1].oid == 0)
+    {
+        env[SYMTAB_SIZE - 1].nome = NULL;
+        env[SYMTAB_SIZE - 1].bucket_type = (struct symb_type){S_INTEGER, 1, NULL};
+        env[SYMTAB_SIZE - 1].classe = VAR;
+        if (env != symbol_table)
+        {
+            env[SYMTAB_SIZE - 1].oid = oid_l;
+        }
+        else
+        {
+            env[SYMTAB_SIZE - 1].oid = oid_g;
+        }
+        returned_oid = env[SYMTAB_SIZE - 1].oid;
+        return returned_oid;
+    }
+
+    int chain_oid = env == symbol_table ? oid_g : oid_l;
+
+    returned_oid = add_temp_in_chain2(env[SYMTAB_SIZE - 1].next, chain_oid);
+    return returned_oid;
+}
+
+int add_temp_in_chain2(struct bucket *bc, int oid_l)
+{
+    if (bc == NULL)
+    {
+        bc = init_bucket();
+        bc->nome = NULL;
+        bc->bucket_type = (struct symb_type){S_INTEGER, 1, NULL};
+        bc->classe = VAR;
+        bc->oid = oid_l;
+        return bc->oid;
+    }
+    return add_temp_in_chain2(bc->next, oid_l);
 }
 
 int add_temp_in_chain(struct bucket *bc,int *oid_l) {
@@ -177,7 +224,7 @@ struct bucket *init_bucket()
 {
     struct bucket *b = malloc(sizeof(struct bucket));
     //TODO: Rivedere
-    *b = (struct bucket){(char *)malloc(140), C_NULL, 0, (struct symb_type){T_NULL, 1, NULL}, (struct bucket *)malloc(100 * sizeof(struct bucket)), 0,(struct bucket **) calloc(20, sizeof(struct bucket*)), malloc(sizeof(struct bucket))};
+    *b = (struct bucket){(char *)malloc(140), C_NULL, 0, (struct symb_type){T_NULL, 1, NULL}, (struct bucket *)malloc(256 * sizeof(struct bucket)), 0,(struct bucket **) calloc(20, sizeof(struct bucket*)), malloc(sizeof(struct bucket))};
     b->nome = "";
     b->next = NULL;
     return b;

@@ -282,6 +282,8 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             break;
 
+            //TODO: CONTROLLARE OUT OF BOUND STUFF
+
         case N_LHS:
             
             analizza(root->child, symbtab);

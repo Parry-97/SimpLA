@@ -1,3 +1,4 @@
+
 #include "def.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -58,6 +59,22 @@ char *save_args(struct Stat stat) {
             sprintf(str_args, "%d",stat.args[0].ival);
             break;
 
+        case VEC:
+            sprintf(str_args, "%d", stat.args[0].ival);
+            break;
+
+        case IXA:
+            sprintf(str_args, "%d",stat.args[0].ival);
+            break;
+
+        case LDA:
+            sprintf(str_args, "%d %d", stat.args[0].ival, stat.args[1].ival);
+            break;
+
+        case CAT:
+            sprintf(str_args, "%d %d", stat.args[0].ival, stat.args[1].ival);
+            break;
+
         case PSH:
             sprintf(str_args, "%d %d",stat.args[0].ival, stat.args[1].ival);
             break;
@@ -101,7 +118,7 @@ struct Stat *get_scode_from_txt(char *filename)
     FILE *fptr;
     if ((fptr = fopen(filename, "r")) == NULL)
     {
-        fprintf(stderr,"ERRORE SIMPLAVM: FILE NON ESISTE!");
+        fprintf(stderr,"ERRORE SIMPLAVM: FILE NON ESISTE!\n");
         exit(-1);
     }
     int prog_len;
@@ -121,7 +138,7 @@ struct Stat *get_scode_from_txt(char *filename)
 
     return code_mem;
 }
-
+//TODO: Mettere i get args anche per le istruzioni nuove
 void get_args_from_str(struct Stat *stat, char *str_args) {
     switch (stat->op)
     {
@@ -153,8 +170,24 @@ void get_args_from_str(struct Stat *stat, char *str_args) {
             sscanf(str_args,"%d %d",&stat->args[0].ival,&stat->args[1].ival);
             break;
 
+        case LDA:
+            sscanf(str_args, "%d %d", &stat->args[0].ival, &stat->args[1].ival);
+            break;
+
+        case CAT:
+            sscanf(str_args, "%d %d", &stat->args[0].ival, &stat->args[1].ival);
+            break;
+
         case STO:
             sscanf(str_args,"%d %d",&stat->args[0].ival,&stat->args[1].ival);
+            break;
+
+        case VEC:
+            sscanf(str_args, "%d", &stat->args[0].ival);
+            break;
+
+        case IXA:
+            sscanf(str_args, "%d", &stat->args[0].ival);
             break;
 
         case JMF:

@@ -1,0 +1,26 @@
+i,j,k,n:integer;
+func testi(z: integer): void
+body
+    for n = 0 to 0 do
+        for k = 0 to  2 do
+            for i = 0 to 5 do
+                writeln("buia");
+            end;
+
+        end;
+    end;        
+
+    writeln("-----------sep----------");
+    
+    for j = 0 to 1  do
+        for i = 0 to 1 do
+            for n = 0 to 2 do
+                writeln("ciao"); 
+            end;     
+        end;
+    end;
+end;
+
+body
+    testi(13);
+end.

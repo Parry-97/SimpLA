@@ -1,10 +1,10 @@
-#all: simplac simplavm \
+all: simplac simplavm
 .PHONY: all
 
 simplac: lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o 
 	cc -g -o simplac lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o
 
-#simplavm: lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o \
+simplavm: lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o 
 	cc -g -o simplavm lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o
 
 
@@ -30,13 +30,13 @@ gencode.o: gencode.c def.h
 printcode.o: printcode.c def.h 
 	cc -g -c printcode.c
 
-#ostack.o: ostack.c def.h \
+ostack.o: ostack.c def.h 
 	cc -g -c ostack.c
 
-#astack.o: astack.c def.h \
+astack.o: astack.c def.h 
 	cc -g -c astack.c
 
-#smachine.o: smachine.c def.h \
+smachine.o: smachine.c def.h 
 	cc -g -c smachine.c
 
 svm.o: svm.c def.h 
@@ -50,3 +50,6 @@ parser.h: parser.y def.h
 
 clean:
 	rm -f lexer.c parser.c parser.h *.output *.o *.sim *.dot simplac simplavm
+
+simclean:
+	rm -f *.sim	
