@@ -1,0 +1,34 @@
+
+#Testavo anche i commenti 
+#sajkhfskdahflakshflsakdfhdksahflS
+
+y,z: vector [5] of integer;
+x: vector[2] of vector[5] of integer;
+
+i,j, k: integer;
+
+func copyvet(param: vector[5] of integer): vector [5] of integer
+testi: integer;
+retvec: vector [5] of integer;
+body
+    for k = 0 to 4 do
+        retvec[k] = param[k] + 1;
+    end;
+
+    for k = 0 to 4 do
+        writeln("retvec[",k,"]: ", retvec[k]);
+    end;
+
+    return retvec;
+end;
+
+body #gskhlahsdhfsadsjdflàààùasùàdaàùsdùàa
+    z = vector(1,2,3,4,5);
+    x = vector(vector(1,2,3,4,5),copyvet(z));
+
+    for i = 0 to 1 do
+        for j  = 0 to 4 do
+            writeln("elemento x[",i,"][",j,"] è ", x[i][j]);
+        end;
+    end;
+end.

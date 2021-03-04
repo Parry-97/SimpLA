@@ -15,6 +15,7 @@ digit       [0-9]
 intconst    {digit}+
 realconst   {intconst}"."{intconst}
 strconst    \"([^\"])*\"
+comment     #(.)+
 boolconst   false|true
 id          {letter}({letter}|{digit})*
 sugar       [()\{\};,\[\]]
@@ -60,6 +61,7 @@ integer     {return(INTEGER);}
 string      {return(STRING);}
 boolean     {return(BOOLEAN);}
 real        {return(REAL);}
+{comment}    ;
 {realconst} {lexval.fval = atof(yytext); return(REALCONST);}
 {intconst}  {lexval.ival = atoi(yytext); return(INTCONST);}
 {strconst}  {lexval.sval = remove_quotes(newstring(yytext)); return(STRCONST);}
