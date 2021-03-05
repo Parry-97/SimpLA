@@ -7,8 +7,7 @@
 struct Astack *aroot;
 struct Ostack *oroot;
 
-//instance stack per memorizzare elementi vettoriali
-struct Ostack *iroot; //TODO: credo me ne serva uno anche per le funzioni?
+struct Ostack *iroot;
 
 FILE *code_file;
 
@@ -75,7 +74,6 @@ void executeSCode(char *filename)
 
     for (int i = 0; !end_of_program; i++)
     {
-        //FIXME: Dove metti size di
         switch (code_mem[i].op)
         {
 
@@ -94,9 +92,7 @@ void executeSCode(char *filename)
                 current_mem[local_obj_id].size = 1;
             }
             break;
-        //FIXME: Gestire la cosa degli size degli stacknode in ostack( istack è fatto solo di elementi atomici)
         case VEC:
-            //TODO: Rivedere magari la cosa degli elementi invertiti(ovvero considerare top - n.elems come primo elem)
             if (!env)
             {
                 global_mem[global_obj_id++].tipo = S_VECTOR;
@@ -112,16 +108,13 @@ void executeSCode(char *filename)
             break;
 
         case IXA:
-            //Just doing this for the sake of avoiding SIGSEVs for now
             ixa.vec_p = opop(current_stack).val.ival * code_mem[i].args[0].ival;
             ixa.vec_p += opop(current_stack).val.vec_p;
 
-            //menate..non necessariamente credo sia vettoriale come elemento
-            opush_t(current_stack, ixa, code_mem[i].args[0].ival, S_VECTOR); //TODO: ...CHECK...
+            opush_t(current_stack, ixa, code_mem[i].args[0].ival, S_VECTOR);
             break;
 
         case LDA:
-            //SImile a LOD
             if (code_mem[i].args[0].ival)
             {
                 lod_data = current_mem[code_mem[i].args[1].ival];
@@ -146,10 +139,7 @@ void executeSCode(char *filename)
 
         case CAT:
 
-            /*Finche sono elementi atomici è easy perche prendo robe sullo ostack, le metto
-            * nello istack e rimetto sull'ostack lo stacknode con puntatore a primo elemento in istack
-            */
-            cat_index = code_mem[i].args[1].ival / code_mem[i].args[0].ival; //speriamo no errori di arrotondamento
+            cat_index = code_mem[i].args[1].ival / code_mem[i].args[0].ival;
 
             struct Ostack *reverseStack = createOStack(code_mem[i].args[0].ival);
             struct Ostack_node cat_elem;
@@ -157,7 +147,6 @@ void executeSCode(char *filename)
             if (cat_index == 1)
             {
 
-                //FIXME: I vettori sono invertiti!
 
                 for (int j = 0; j < code_mem[i].args[0].ival; j++)
                 {
@@ -181,13 +170,11 @@ void executeSCode(char *filename)
                     opush_t(reverseStack, cat_elem.val, cat_elem.size, cat_elem.tipo);
                 }
 
-                for (int j = 0; j < code_mem[i].args[0].ival; j++) //per ciascun vettore da concatenare
+                for (int j = 0; j < code_mem[i].args[0].ival; j++)
                 {
                     Value vec_ref = opop(reverseStack).val;
-                    /**
-                     * Per ciascun elemento di un sottovettore(parto dall'elemento in 'cima' e poi scendo) 
-                    */
-                    for (int k = vec_ref.vec_p; k < vec_ref.vec_p + cat_index; k++) //TODO: CHECK FOR INDEXING
+                    
+                    for (int k = vec_ref.vec_p; k < vec_ref.vec_p + cat_index; k++)
                     {
                         opush_t(current_instack, current_instack->stack[k].val, current_instack->stack[k].size, current_instack->stack[k].tipo);
                     }
@@ -266,7 +253,6 @@ void executeSCode(char *filename)
             break;
 
         case EQU:
-            //FIXME
             node1 = opop(current_stack);
             node2 = opop(current_stack);
 
@@ -292,7 +278,6 @@ void executeSCode(char *filename)
 
         case VIN:
 
-            //TODO: COntrollare che i size dei vettori siano ben messi...altrimenti menate qua
             node1 = opop(current_stack);
             node2 = opop(current_stack);
 
@@ -326,7 +311,6 @@ void executeSCode(char *filename)
             break;
 
         case NEQ:
-            //FIXME
             node1 = opop(current_stack);
             node2 = opop(current_stack);
 
@@ -555,7 +539,6 @@ void executeSCode(char *filename)
             break;
 
         case PSH:
-            //FIXME: fix new instack element stacking ..elements are reversed
             call_oid = global_obj_id;
             v1 = code_mem[i].args[0];
             v2 = code_mem[i].args[1];
@@ -567,11 +550,11 @@ void executeSCode(char *filename)
 
             for (int j = 0; j < v1.ival; j++)
             {
-                param = opop(current_stack); //FIXME: SE non atomico devo copiare i dati nel istack per la funzione
+                param = opop(current_stack);
 
                 if (param.size > 1)
                 {
-                    for (int k = param.val.vec_p; k < param.val.vec_p + param.size; k++) //TODO: CHECK indexing
+                    for (int k = param.val.vec_p; k < param.val.vec_p + param.size; k++)
                     {
                         opush_t(vec_stack, current_instack->stack[k].val, 1, current_instack->stack[k].tipo);
                     }
@@ -788,16 +771,15 @@ void executeSCode(char *filename)
                 if (code_mem[i].args[0].ival)
                 {
                     struct Ostack_node ret = opop(current_stack);
-                    //FIXME : vettore potrebbe essere invertito
-                    if (ret.size > 1) //FIXME: apparently = 0
+                    if (ret.size > 1)
                     {
-                        for (int k = ret.val.vec_p; k < ret.val.vec_p + ret.size; k++) //TODO: CHECK indexing
+                        for (int k = ret.val.vec_p; k < ret.val.vec_p + ret.size; k++)
                         {
                             opush_t(next_vecstack, current_instack->stack[k].val, 1, current_instack->stack[k].tipo);
                         }
                         ret.val.vec_p = next_vecstack->top - ret.size + 1;
                     }
-                    opush_t(next_stack, ret.val, ret.size, ret.tipo); //FIXME: Se vettore..controllare
+                    opush_t(next_stack, ret.val, ret.size, ret.tipo);
                 }
                 current_stack = next_stack;
                 current_instack = next_vecstack;

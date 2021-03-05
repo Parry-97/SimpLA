@@ -7,7 +7,6 @@ int oid_g = 0;
 int create_int_temp(struct bucket *env, int *oid_l) {
     int returned_oid;
 
-    printf("oidl param della funzione %d\n", *oid_l);
     
     if (env[SYMTAB_SIZE - 1].oid == 0)
     {
@@ -34,7 +33,6 @@ int create_int_temp(struct bucket *env, int *oid_l) {
 int create_int_temp2(struct bucket *env, int oid_l) {
     int returned_oid;
 
-    printf("oidl param della funzione %d\n", oid_l);
 
     if (env[SYMTAB_SIZE - 1].oid == 0)
     {
@@ -223,7 +221,6 @@ int hash(const char *id)
 struct bucket *init_bucket()
 {
     struct bucket *b = malloc(sizeof(struct bucket));
-    //TODO: Rivedere
     *b = (struct bucket){(char *)malloc(140), C_NULL, 0, (struct symb_type){T_NULL, 1, NULL}, (struct bucket *)malloc(256 * sizeof(struct bucket)), 0,(struct bucket **) calloc(20, sizeof(struct bucket*)), malloc(sizeof(struct bucket))};
     b->nome = "";
     b->next = NULL;

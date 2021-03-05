@@ -52,7 +52,7 @@ union symb_env
 
 struct symb_type
 {
-    s_type stipo; //TODO: maybe change name->weird
+    s_type stipo;
     int dim;
     struct symb_type *sub_type;
 };
@@ -189,7 +189,6 @@ typedef enum
     NIK
 } Operator;
 
-//TODO: O estengo questa o faccio un 'altra union per gli stack...
 typedef union
 {
     int ival;
@@ -200,10 +199,8 @@ typedef union
         TRUE
     } bval;
     float fval;
-    int vec_p; //sara un puntatore al primo elemento stacknode
-               //di un vettore o sottovettore..poi la VM si gestisce l'indexing
-               //ma magari metto solo indice intero del primo elemento!! essendo
-               //lo 'stack' un array->è efficiente
+    int vec_p;
+
 } Value;
 
 struct data_mem
@@ -231,7 +228,7 @@ struct SCode
 
 typedef struct snode
 {
-    Typenode type; //TODO: magari cambiare nome in node_type
+    Typenode type;
     Value value;
     struct symb_type sem_type;
     int is_gen;
@@ -243,7 +240,7 @@ typedef Node *Pnode;
 
 struct Ostack_node
 {
-    int size; //alla fine sarà sempre uguale a 1
+    int size;
     Value val;
     s_type tipo;
 };

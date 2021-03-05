@@ -138,7 +138,6 @@ struct Stat *get_scode_from_txt(char *filename)
 
     return code_mem;
 }
-//TODO: Mettere i get args anche per le istruzioni nuove
 void get_args_from_str(struct Stat *stat, char *str_args) {
     switch (stat->op)
     {

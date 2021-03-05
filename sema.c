@@ -36,7 +36,6 @@ void find_index_in_statlist(char *id, Pnode node)
 
     switch (node->value.ival)
     {
-        //lhs non hanno piu un reference a un id: PROBLEMA?
     case N_ASSIGN_STAT:
 
         if (node->child->type != T_ID)
@@ -46,7 +45,7 @@ void find_index_in_statlist(char *id, Pnode node)
 
         if (strcmp(node->child->value.sval, id) == 0)
         {
-            fprintf(stderr, "ERRORE: L'INDICE NON SI PUO' ASSEGNARE NEL FOR\n");
+            fprintf(stderr, "LOOP ERROR: L'INDICE NON SI PUO' ASSEGNARE NEL FOR\n");
             exit(-1);
         }
         break;
@@ -62,7 +61,7 @@ void find_index_in_statlist(char *id, Pnode node)
     case N_READ_STAT:
         if (strcmp(node->child->child->value.sval, id) == 0)
         {
-            fprintf(stderr, "ERRORE: L'INDICE NON SI PUO' ASSEGNARE NEL READ\n");
+            fprintf(stderr, "LOOP ERROR: L'INDICE NON SI PUO' ASSEGNARE NEL READ\n");
             exit(-1);
         }
 
@@ -74,7 +73,7 @@ void find_index_in_statlist(char *id, Pnode node)
             if (strcmp(nodo_indice->brother->value.sval, id) == 0)
             {
                 /* code */
-                fprintf(stderr, "ERRORE: L'INDICE NON SI PUO' ASSEGNARE NEL READ\n");
+                fprintf(stderr, "LOOP ERROR: L'INDICE NON SI PUO' ASSEGNARE NEL READ\n");
                 exit(-1);
             }
             nodo_indice = nodo_indice->brother;
@@ -158,7 +157,6 @@ struct bucket *find_index_in_env(char *id, struct bucket symbtab[])
     return bc;
 }
 
-//FIXME: cambiare dove necessarrio il confronto di tipi con compare_types();
 //FIXME: Diversificare meglio gli errori, troppo simili!
 void analizza(Pnode root, struct bucket symbtab[])
 {
@@ -170,6 +168,7 @@ void analizza(Pnode root, struct bucket symbtab[])
     struct bucket *bc_2;
     struct bucket *bc_1;
     struct bucket *bc;
+    Pnode temp_node_1;
 
     if (root->type == T_ID)
     {
@@ -180,7 +179,7 @@ void analizza(Pnode root, struct bucket symbtab[])
     {
         if (!is_loop)
         {
-            fprintf(stderr, "ERRORE: BREAK NON CONCESSO\n");
+            fprintf(stderr, "LOOP ERROR: BREAK NON CONCESSO\n");
             exit(-1);
         }
     }
@@ -193,7 +192,7 @@ void analizza(Pnode root, struct bucket symbtab[])
         case N_VAR_DECL:
             if (root->child->brother->type == T_VOID)
             {
-                fprintf(stderr, "ERRORE: TIPO VOID APPLICABILE SOLO A FUNZIONI\n");
+                fprintf(stderr, "DECL_ERROR: TIPO VOID APPLICABILE SOLO A FUNZIONI\n");
                 exit(-1);
             }
             break;
@@ -201,7 +200,7 @@ void analizza(Pnode root, struct bucket symbtab[])
         case N_LOGIC_EXPR:
             if (root->op_code != T_AND && root->op_code != T_OR)
             {
-                fprintf(stderr, "ERRORE: OPERATORE LOGICO ERRATO\n");
+                fprintf(stderr, "LOGIC ERROR: OPERATORE LOGICO ERRATO\n");
                 exit(-1);
             }
 
@@ -209,11 +208,10 @@ void analizza(Pnode root, struct bucket symbtab[])
             analizza(root->child->brother, symbtab);
             if (root->child->sem_type.stipo != S_BOOLEAN_ || root->child->brother->sem_type.stipo != S_BOOLEAN_)
             {
-                fprintf(stderr, "ERRORE: OPERATORE RELAZIONALE ERRATO\n");
+                fprintf(stderr, "LOGIC ERROR : TIPI LOGICI NON CONSENTITI\n");
                 exit(-1);
             }
 
-            //TODO: make sure not gives SIGSEV
             root->sem_type = (struct symb_type){S_BOOLEAN_, 1, NULL};
             break;
 
@@ -225,19 +223,19 @@ void analizza(Pnode root, struct bucket symbtab[])
             {
                 if (root->op_code != T_IN)
                 {
-                    fprintf(stderr, "RELERR1: CONDIZIONE RELAZIONALE ERRATA \n");
+                    fprintf(stderr, "REL_ERROR: CONDIZIONE RELAZIONALE ERRATA \n");
                     exit(-1);
                 }
                 else if (!compare_types(root->child->sem_type, *(root->child->brother->sem_type.sub_type)))
                 {
 
-                    fprintf(stderr, "RELERR2: CONDIZIONE RELAZIONE ERRATA \n");
+                    fprintf(stderr, "REL_ERROR: CONDIZIONE RELAZIONE ERRATA \n");
                     exit(-1);
                 }
             }
             else if (root->child->sem_type.stipo != root->child->brother->sem_type.stipo)
             {
-                fprintf(stderr, "RELERR3: CONDIZIONE RELAZIONALE ERRATA\n");
+                fprintf(stderr, "REL_ERROR: CONDIZIONE RELAZIONALE ERRATA\n");
                 exit(-1);
             }
             root->sem_type = (struct symb_type){S_BOOLEAN_,1,NULL};
@@ -249,13 +247,13 @@ void analizza(Pnode root, struct bucket symbtab[])
             analizza(root->child->brother, symbtab);
             if (root->child->sem_type.stipo != root->child->brother->sem_type.stipo)
             {
-                fprintf(stderr, "ERRORE: OPERAZIONE TRA TIPI DIFFERENTI\n");
+                fprintf(stderr, "MATH ERROR: OPERAZIONE TRA TIPI DIFFERENTI\n");
                 exit(-1);
             }
 
             if (root->child->sem_type.stipo != S_INTEGER && root->child->sem_type.stipo != S_REAL)
             {
-                fprintf(stderr, "ERRORE: TIPO NON CONFORME ALL'ESPRESSIONE\n");
+                fprintf(stderr, "MATH ERROR: TIPO NON CONFORME ALL'ESPRESSIONE\n");
                 exit(-1);
             }
 
@@ -268,13 +266,13 @@ void analizza(Pnode root, struct bucket symbtab[])
             if (root->op_code == T_MINUS && root->child->sem_type.stipo == S_BOOLEAN_)
             {
 
-                fprintf(stderr, "ERRORE: OPERATORE DI SOTTRAZIONE NON USATO CORRETTAMENTE\n");
+                fprintf(stderr, "NEG_ERROR: OPERATORE DI SOTTRAZIONE NON USATO CORRETTAMENTE\n");
                 exit(-1);
             }
             else if (root->op_code == T_NOT && root->child->sem_type.stipo != S_BOOLEAN_)
             {
 
-                fprintf(stderr, "ERRORE: OPERATORE DI NEGAZIONE NON USATO CORRETTAMENTE\n");
+                fprintf(stderr, "NEG_ERROR: OPERATORE DI NEGAZIONE NON USATO CORRETTAMENTE\n");
                 exit(-1);
             }
 
@@ -282,7 +280,6 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             break;
 
-            //TODO: CONTROLLARE OUT OF BOUND STUFF
 
         case N_LHS:
             
@@ -295,17 +292,16 @@ void analizza(Pnode root, struct bucket symbtab[])
 
                 if (bc_6->classe == FUN)
                 {
-                    fprintf(stderr, "LHSERR: NON E' POSSIBILE INDICIZZARE UNA FUNZIONE\n");
+                    fprintf(stderr, "LHS_ERROR: NON E' POSSIBILE INDICIZZARE UNA FUNZIONE\n");
                     exit(-1);
                 }
                 /* code */
                 root->sem_type = root->child->sem_type;
             }
 
-            //tecnicamente potrei fare questo controllo con N_TVECTOR prima di arrivare qua
             if (root->child->sem_type.sub_type->stipo == S_VOID_)
             {
-                fprintf(stderr, "LHSERR: NON E' POSSIBILE CREARE VETTORI DI TIPO VOID\n");
+                fprintf(stderr, "LHS_ERROR: NON E' POSSIBILE CREARE VETTORI DI TIPO VOID\n");
                 exit(-1);
             }
 
@@ -314,7 +310,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 root->sem_type = *(root->child->sem_type.sub_type);
             } else
             {
-                fprintf(stderr, "LHSERR: ERRORE IN INDICIZZAZIONE\n");
+                fprintf(stderr, "LHS_ERROR: ERRORE IN INDICIZZAZIONE\n");
                 exit(-1);
             }
             break;
@@ -334,13 +330,12 @@ void analizza(Pnode root, struct bucket symbtab[])
             {
                 if (!compare_types(iter_expr->sem_type, root->child->child->sem_type))
                 {
-                    fprintf(stderr, "ERRVEC: VETTORE NON PROPRIAMENTE COSTRUITO\n");
+                    fprintf(stderr, "VEC_ERROR: VETTORE NON PROPRIAMENTE COSTRUITO\n");
                     exit(-1);
                 }
 
                 iter_expr = iter_expr->brother;
             }
-            //Ho dovuto usare root->child->child->sem_type perche expr_type dava errorre
             root->sem_type = (struct symb_type){S_VECTOR, n_expr, &(root->child->child->sem_type)};
             break;
 
@@ -349,7 +344,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (bc_3->classe != FUN)
             {
-                fprintf(stderr, "ERRORE: FUNZIONE NON ESISTENTE\n");
+                fprintf(stderr, "FUNC_ERROR: FUNZIONE NON ESISTENTE\n");
                 exit(-1);
             }
 
@@ -361,7 +356,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (n != bc_3->formali.num)
             {
-                fprintf(stderr, "ERRORE: IL NUMERO DI PARAMETRI E' ERRATO\n");
+                fprintf(stderr, "FUNC_ERROR: IL NUMERO DI PARAMETRI E' ERRATO\n");
                 exit(-1);
             }
 
@@ -376,7 +371,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 analizza(temp_node, symbtab);
                 if (bc_3->formali.descr[i]->bucket_type.stipo != temp_node->sem_type.stipo)
                 {
-                    fprintf(stderr, "ERRORE: TIPI DI DATI NON COMPATIBILI\n");
+                    fprintf(stderr, "FUNC_ERROR: TIPI DI PARAM NON COMPATIBILI\n");
                     exit(-1);
                 }
 
@@ -390,7 +385,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             analizza(root->child, symbtab);
             if (root->child->sem_type.stipo != S_BOOLEAN_)
             {
-                fprintf(stderr, "ERRORE: CONDIZIONE ERRATA\n");
+                fprintf(stderr, "COND_ERROR: CONDIZIONE ERRATA\n");
                 exit(-1);
             }
 
@@ -398,7 +393,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             analizza(root->child->brother->brother, symbtab);
             if (root->child->brother->sem_type.stipo != root->child->brother->brother->sem_type.stipo)
             {
-                fprintf(stderr, "ERRORE: CONDIZIONE ERRATA\n");
+                fprintf(stderr, "COND_ERROR: CONDIZIONE ERRATA\n");
                 exit(-1);
             }
 
@@ -408,21 +403,20 @@ void analizza(Pnode root, struct bucket symbtab[])
 
         case N_CASTING:
             analizza(root->child, symbtab);
-            //FIXME
             if (root->child->sem_type.stipo != S_INTEGER && root->child->sem_type.stipo != S_REAL)
             {
                 /* code */
-                fprintf(stderr, "ERRORE: CASTING ERRATO\n");
+                fprintf(stderr, "CAST_ERROR: CASTING ERRATO\n");
                 exit(-1);
             }
             if (root->child->sem_type.stipo == S_INTEGER && root->op_code == T_INTEGER)
             {
-                fprintf(stderr, "ERRORE: CASTING SUPERFLUO\n");
+                fprintf(stderr, "CAST_ERROR: CASTING SUPERFLUO\n");
                 exit(-1);
             }
             if (root->child->sem_type.stipo == S_REAL && root->op_code == T_REAL)
             {
-                fprintf(stderr, "ERRORE: CASTING SUPERFLUO\n");
+                fprintf(stderr, "CAST_ERROR: CASTING SUPERFLUO\n");
                 exit(-1);
             }
             int tipos = root->op_code == T_INTEGER ? S_INTEGER : S_REAL;
@@ -433,9 +427,9 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             analizza(root->child, symbtab);
             analizza(root->child->brother, symbtab);
-            if (!compare_types(root->child->sem_type, root->child->brother->sem_type)) //TODO: Chiedere al Lampe POsso assegnare vettori interni?
+            if (!compare_types(root->child->sem_type, root->child->brother->sem_type))
             {
-                fprintf(stderr, "ERRORE: ASSEGNAMENTO NON CONSENTITO (TIPI DIFFERENTI)\n");
+                fprintf(stderr, "ASSIGN_ERROR: ASSEGNAMENTO NON CONSENTITO (TIPI DIFFERENTI)\n");
                 exit(-1);
             }
 
@@ -446,7 +440,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             analizza(root->child, symbtab);
             if (root->child->sem_type.stipo != S_BOOLEAN_)
             {
-                fprintf(stderr, "ERRORE: IF NON CORRETTO\n");
+                fprintf(stderr, "IF_ERROR: IF NON CORRETTO\n");
                 exit(-1);
             }
             analizza(root->child->brother, symbtab);
@@ -464,7 +458,7 @@ void analizza(Pnode root, struct bucket symbtab[])
             analizza(root->child, symbtab);
             if (root->child->sem_type.stipo != S_BOOLEAN_)
             {
-                fprintf(stderr, "ERRORE: WHILE NON CORRETTO\n");
+                fprintf(stderr, "WHILE_ERROR: WHILE NON CORRETTO\n");
                 exit(-1);
             }
             analizza(root->child->brother, symbtab);
@@ -477,7 +471,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (bc->classe == FUN)
             {
-                fprintf(stderr, "ERRORE: NON E' POSSIBILE UTILIZZARE UNA FUNZIONE COME INDICE\n");
+                fprintf(stderr, "FOR_ERROR: NON E' POSSIBILE UTILIZZARE UNA FUNZIONE COME INDICE\n");
                 exit(-1);
             }
 
@@ -485,7 +479,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (root->child->sem_type.stipo != S_INTEGER)
             {
-                fprintf(stderr, "ERRORE: INDICE DEL CICLO DEVE ESSERE INTERO \n");
+                fprintf(stderr, "FOR_ERROR: INDICE DEL CICLO DEVE ESSERE INTERO \n");
                 exit(-1);
             }
 
@@ -494,7 +488,7 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (root->child->brother->sem_type.stipo != S_INTEGER || root->child->brother->brother->sem_type.stipo != S_INTEGER)
             {
-                fprintf(stderr, "ERRORE: TIPO DELL' ESPRESSIONE DEV'ESSERE INTERO\n");
+                fprintf(stderr, "FOR_ERROR: TIPO DELL' ESPRESSIONE DEV'ESSERE INTERO\n");
                 exit(-1);
             }
             find_index_in_statlist(root->child->value.sval, root->child->brother->brother->brother->child);
@@ -505,7 +499,7 @@ void analizza(Pnode root, struct bucket symbtab[])
         case N_RETURN_STAT:
             if (root->child == NULL)
             {
-                root->sem_type.stipo = S_VOID_; //TODO: Check for SIGSEV
+                root->sem_type.stipo = S_VOID_;
             }
             else
             {
@@ -515,17 +509,40 @@ void analizza(Pnode root, struct bucket symbtab[])
 
             if (return_type.stipo != root->sem_type.stipo)
             {
-                fprintf(stderr, "ERRORE:RETURN NON CORRETTO\n");
+                fprintf(stderr, "RET_ERROR: RETURN NON CORRETTO\n");
                 exit(-1);
             }
             break;
 
         case N_READ_STAT:
-            analizza(root->child, symbtab);
-            Pnode temp_node_1 = root->child;
-            while (temp_node_1->brother != NULL)
+            temp_node_1 = root->child->child;
+            while (temp_node_1 != NULL)
             {
-                analizza(temp_node_1->brother, symbtab);
+                analizza(temp_node_1, symbtab);
+                if (temp_node_1->sem_type.stipo == S_VECTOR)
+                {
+                    /* code */
+                    fprintf(stderr, "READ ERROR: READ DIRETTA DI VETTORE NON PERMESSA !\n");
+                    exit(-1);
+                }
+
+                temp_node_1 = temp_node_1->brother;
+            }
+
+            break;
+
+        case N_WRITE_STAT:
+            temp_node_1 = root->child->brother->child;
+            while (temp_node_1 != NULL)
+            {
+                analizza(temp_node_1, symbtab);
+                if (temp_node_1->sem_type.stipo == S_VECTOR)
+                {
+                    /* code */
+                    fprintf(stderr, "WRITE ERROR: WRITE DIRETTA DI VETTORE NON PERMESSA !\n");
+                    exit(-1);
+                }
+
                 temp_node_1 = temp_node_1->brother;
             }
 
@@ -554,7 +571,7 @@ void analizza(Pnode root, struct bucket symbtab[])
                 if (root->value.ival == N_FUNC_DECL)
                 {
                     /* code */
-                    return_type.stipo = S_VOID_; //TODO: CHECK FOR SIGSEV
+                    return_type.stipo = S_VOID_;
                 }
             }
             break;

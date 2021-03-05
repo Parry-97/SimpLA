@@ -31,4 +31,8 @@ body #gskhlahsdhfsadsjdflàààùasùàdaàùsdùàa
             writeln("elemento x[",i,"][",j,"] è ", x[i][j]);
         end;
     end;
+
+    if 4 in x then
+        writeln("4 è stato trovato");
+    end;
 end.

@@ -2,7 +2,6 @@
 #include "string.h"
 #include "def.h"
 #include <stdio.h>
-//FIXME: add new istack reference
 
 struct Astack_node newANode()
 {

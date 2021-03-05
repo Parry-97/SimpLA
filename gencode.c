@@ -10,7 +10,6 @@ extern struct SCode *current_prog;
 int is_break = 0;
 int is_return = 0;
 Pnode expr_list;
-//magari potrei riusare quella sopra
 
 void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 {
@@ -112,18 +111,11 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             int var_size = op == VEC ? get_type_size(decl_type) : decl_type.stipo;
 
             int num;
-            num = conta_fratelli(p->child->child); //CHECK
+            num = conta_fratelli(p->child->child);
 
             for (int i = 0; i < num; i++)
             {
-                //IN caso di vettori calcolo la dimensione del vettore rispetto a quanti elementi atomici contiene
-                // o quante celle di instance stack  mi serviranno per memorizzare i suoi elementi: TOP
-                //instance è fatto di celle come datamem  , ma che memorizzano SOLO elementi atomici  sono messi 'a blocchi' o sequenzialmente per ogni vettore
-                //memorizzo il puntatore al primo elemento e poi gli altri saranno quelli vicini. Ci sta l'idea di uno stack
-                //speciale in cui tutti gli elementi del vettore sono inseriti vicini tra di loro. IXA è top perche a seconda dell'elem size
-                // che gli dò lui indicizza non solo elementi atomici ma anche interi vettori. Le celle datamem o stacknode storano puntatori a
-                //celle di instance stack.
-                *prog = appcode(*prog, makecode1(op, var_size)); //CHECK CAREFULLY
+                *prog = appcode(*prog, makecode1(op, var_size));
             }
 
             p->is_gen = 1;
@@ -155,7 +147,6 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             else
             {
                 generateCode(p->child, symbtab, prog);
-                //prog->last = newstat(IST);
                 removeEIL_withIST(prog);
             }
 
@@ -175,21 +166,16 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             break;
 
         case N_LHS:
-            //Ovviamente devo differenziare se è un id o un'op di indexing
             generateCode(p->child, symbtab, prog);
             generateCode(p->child->brother, symbtab, prog);
 
             int type_size = p->child->sem_type.sub_type == NULL ? 1 : get_type_size(*(p->child->sem_type.sub_type));
-            *prog = appcode(*prog, makecode1(IXA, type_size)); //Calcola indirizzo e lo metto in cima alla pila
+            *prog = appcode(*prog, makecode1(IXA, type_size));
             if (p->sem_type.stipo != S_VECTOR)
             {
                 *prog = appcode(*prog, makecode(EIL));
             }
 
-            //       Capire come mettere sto EIL, perche Lampe forse intende usarlo solo per elem atomici (Usare VIL?)
-            //       Così ccome l'ho fatto almeno è una definizione abbastanza ricorsiva e ci sta secondo me
-            //       Ma perchè il Lampe fa infatti la distinzione tra |int| o |string| mentre nel mio caso sono uguali a
-            //       1 cella come dimensione quindi sarebbe un'informazione ridondante.
             p->is_gen = 1;
             break;
 
@@ -452,7 +438,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
         case N_READ_STAT:
 
-            nume = conta_fratelli(p->child->child); //:CHECK
+            nume = conta_fratelli(p->child->child);
             Pnode cont;
             cont = p->child->child;
 
@@ -484,7 +470,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
 
             count_expr = p->child->brother->child;
             int num_expr;
-            num_expr = conta_fratelli(count_expr); //: CHECK
+            num_expr = conta_fratelli(count_expr);
 
             char *write_format = (char *)malloc(sizeof(char) * 25);
 
@@ -514,7 +500,7 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             if (expr_list != NULL)
             {
                 count_bro = expr_list->child;
-                num_formals = conta_fratelli(count_bro); //: CHECK
+                num_formals = conta_fratelli(count_bro);
 
                 while (count_bro != NULL)
                 {
@@ -634,7 +620,6 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
             }
 
             int oid3 = create_int_temp2(symbtab, oidl);
-            printf("oid3 temporaneo è %d\n", oid3);
 
             *prog = appcode(*prog, makecode2(STO, env3, oid3));
             *prog = appcode(*prog, makecode2(LOD, env2, oid2));
@@ -994,13 +979,12 @@ char *get_format(struct symb_type txpe)
         return "s";
 
     default:
-        fprintf(stderr, "ERRORE: NON è POSSIBILE STAMPARE DATI VOID\n");
+        fprintf(stderr, "FORMAT ERROR: NON è POSSIBILE STAMPARE DATI VOID\n");
         exit(-1);
     }
 }
 
-int get_type_size(struct symb_type decl_type) //cambia per avere dimensioni totali del vettore in celle()
-//ad es: vector [3] of vector[5] of vector [7] of integer => vec-size = 3*5*7*1 = 105 celle (elem atomici hanno dim = 1)
+int get_type_size(struct symb_type decl_type) 
 {
 
     if (decl_type.stipo == S_VECTOR)
@@ -1048,5 +1032,5 @@ void generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog)
     }
     oid = bc->oid;
     op = bc->bucket_type.stipo == S_VECTOR ? LDA : LOD;
-    *prog = appcode(*prog, makecode2(op, env, oid)); //per vettori lui usa LDA
+    *prog = appcode(*prog, makecode2(op, env, oid));
 }

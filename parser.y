@@ -76,7 +76,7 @@ type : atomic_type {$$ = $1;}
 
 vector_type : VECTOR '[' INTCONST {$$=intconstnode();} ']' OF type {$$ = nontermnode(N_TVECTOR); $$->child = $4; 
                                           $$->child->brother = $7;
-                                          //Devo continuare a concatenare tipi
+                                      
                                           $$->sem_type = (struct symb_type){S_VECTOR, $4->value.ival, &($7->sem_type)};};
 
 atomic_type : INTEGER {$$ = keynode(T_INTEGER);$$->sem_type = (struct symb_type){S_INTEGER,1,NULL};}
@@ -334,15 +334,13 @@ int main(int argc, char **argv)
 
   if (argc >= 2) {
     if ((yyin = fopen(argv[1], "r")) == NULL){
-       fprintf(stderr,"ERRORE SIMPLAC: FILE NON ESISTE!");
-       // Program exits if the file pointer returns NULL.
-       exit(-1);
+      fprintf(stderr, "SIMPLAC ERROR: FILE NON ESISTE!\n");
+      exit(-1);
     }
   }
   else {
-      fprintf(stderr,"ERRORE SIMPLAC: INDICARE FILE DA COMPILARE");
-       // Program exits if the file pointer returns NULL.
-       exit(-1);
+    fprintf(stderr, "SIMPLAC ERROR: INDICARE FILE DA COMPILARE\n");
+    exit(-1);
   }
     
 
@@ -350,7 +348,6 @@ int main(int argc, char **argv)
     //Togliere commento sulla funzione treeprint per visualizzare l'albero sintattico astratto a video
     //treeprint(root, 0);
 
-    //print_symbol_table(symbol_table);
     
     analizza(root, symbol_table);
     
@@ -363,17 +360,12 @@ int main(int argc, char **argv)
     *tot_prog = appcode(*tot_prog, makecode(STP));
     *tot_prog = appcode(*tot_prog,*sub_prog10);
 
-    printf("\n✅✅✅✅ Compilazione di Codice SimpLA avvenuta con successo✅✅✅✅\n");
+    printf("\n---- Compilazione di Codice SimpLA avvenuta con successo----\n");
     //Togliere commento sulla funzione codeprint per visualizzare il codice intermedio SCode a video
     codeprint(tot_prog);
 
     char *s_filename = strcat(argv[1],".sim");
     save_to_txt(tot_prog, s_filename);
-
-    //printf("---- Test Code: -----\n");
-    //get_scode_from_file(s_filename);
-
-    //executeSCode(s_filename);
   }
   
   return(result);

@@ -36,7 +36,6 @@ int opush_batch(struct Ostack *istack, int batch_size) {
     return istack->top - batch_size + 1;
 }
 
-//FIXME metter come parametro il s_type?!
 void opush(struct Ostack *ostack, Value val, int size)
 {
     struct Ostack_node stackNode = newONode();

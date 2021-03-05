@@ -4,7 +4,6 @@
     #include "def.h"
     Value lexval;
     int line = 1;
-    //TODO: add lex rule for comments
     
 %}
 %option noyywrap
