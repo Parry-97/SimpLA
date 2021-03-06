@@ -3,6 +3,8 @@ x: vector[2] of vector[5] of integer;
 
 i,j, k: integer;
 
+#Test funzioni e vettori
+
 func copyvet(param: vector[5] of integer): vector [5] of integer
 testi: integer;
 retvec: vector [5] of integer;

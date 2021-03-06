@@ -1,38 +1,33 @@
+i,j,k:integer;
 
-#Testavo anche i commenti 
-#sajkhfskdahflakshflsakdfhdksahflS
 
-y,z: vector [5] of integer;
-x: vector[2] of vector[5] of integer;
-
-i,j, k: integer;
-
-func copyvet(param: vector[5] of integer): vector [5] of integer
-testi: integer;
-retvec: vector [5] of integer;
+func testfun(): void
+matrice: vector [3] of vector [2] of vector[2] of integer;
 body
-    for k = 0 to 4 do
-        retvec[k] = param[k] + 1;
-    end;
+    
+    
 
-    for k = 0 to 4 do
-        writeln("retvec[",k,"]: ", retvec[k]);
-    end;
+    #test di vettore a più di 2 dimensioni 
 
-    return retvec;
-end;
+    matrice = vector( vector(vector(1,2),vector(3,4)),
+                      vector(vector(5,6),vector(7,8)),
+                      vector(vector(9,10),vector(11,12)) );
 
-body #gskhlahsdhfsadsjdflàààùasùàdaàùsdùàa
-    z = vector(1,2,3,4,5);
-    x = vector(vector(1,2,3,4,5),copyvet(z));
 
-    for i = 0 to 1 do
-        for j  = 0 to 4 do
-            writeln("elemento x[",i,"][",j,"] è ", x[i][j]);
+    for i = 0 to 2 do
+        for j = 0 to 1 do
+            for k = 0 to 1 do
+                writeln("elemento matrice[",i,"][",j,"][",k,"] è: ", matrice[i][j][k]);
+            end;
         end;
     end;
 
-    if 4 in x then
-        writeln("4 è stato trovato");
-    end;
+
+    #Togliendo # dai 2 seguenti commenti genera errore
+    # write(matrice);
+    #read(matrice);
+end;
+
+body
+    testfun();
 end.

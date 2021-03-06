@@ -122,10 +122,12 @@ struct bucket *find_in_chain_senza_errore(char *id, struct bucket *bc)
 int conta_fratelli(Pnode fratello)
 {
     int contatore = 0;
-    while (fratello != NULL)
+    Pnode temp = fratello;
+
+    while (temp != NULL)
     {
         contatore++;
-        fratello = fratello->brother;
+        temp = temp->brother;
     }
     return contatore;
 }

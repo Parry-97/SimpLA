@@ -4,17 +4,29 @@ riga: vector[5] of integer;
 
 i,j : integer;
 body
+
+    #Test feature di base per vettori e matrici
+
     numeri = vector(5,29,13,25,67,123,6);
+
+
+
+    i = 0;
+    while i < 7 do
+        writeln("numeri[",i,"] := ", numeri[i]);
+        i = i + 1;
+    end;    
+
     write("Inserisci Numero per i :");
     read(i);
 
-    
+
     matrice = vector(vector(1,2,3,4,5),
                      vector(2,4,6,8,10),
                      vector(3,6,9,12,3*32+i));
     riga = matrice[2];
 
-    writeln("elemento 1 in riga: ",riga[4]);
+    writeln("elemento 3 in riga: ",riga[3]);
 
     for i = 0 to 2 do
         for j = 0 to 4 do 

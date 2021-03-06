@@ -160,8 +160,9 @@ void generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog)
                 generateCode(vec_expr, symbtab, prog);
                 vec_expr = vec_expr->brother;
             }
-
-            *prog = appcode(*prog, makecode2(CAT, conta_fratelli(p->child->child), conta_fratelli(p->child->child) * p->child->child->sem_type.dim));
+            //FIXME per 3D mat
+            int numexpr = conta_fratelli(p->child->child);
+            *prog = appcode(*prog, makecode2(CAT, numexpr, numexpr * get_type_size(p->child->child->sem_type)));
             p->is_gen = 1;
             break;
 
