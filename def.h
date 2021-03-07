@@ -263,7 +263,7 @@ struct Astack_node
 {
     int num_objs;
     struct Ostack *objects;
-    struct Ostack *vec_elems;
+    //struct Ostack *vec_elems;
     int ret_addr;
     int call_oid;
     struct data_mem *local_mem;
@@ -326,7 +326,7 @@ void treeprint(Pnode, int),
     generateCode(Pnode p, struct bucket *symbtab, struct SCode *prog),
     relocate_address(struct SCode code, int offset),
     generateID_Code(Pnode p, struct bucket *symbtab, struct SCode *prog),
-    apush(struct Astack *stack, struct Ostack *objects, struct Ostack *vec_elems, int call_oid, struct data_mem *local_mem, int num_objs, int ret_addr),
+    apush(struct Astack *stack, struct Ostack *objects, int call_oid, struct data_mem *local_mem, int num_objs, int ret_addr),
     opush(struct Ostack *stack, Value val, int size),
     opush_t(struct Ostack *ostack, Value val, int size, s_type stipo),
     executeSCode(char *filename),

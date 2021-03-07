@@ -11,7 +11,7 @@ struct Astack_node newANode()
     stackNode->call_oid = 0;
     stackNode->local_mem = NULL;
     stackNode->objects = NULL;
-    stackNode->vec_elems = NULL;
+    //stackNode->vec_elems = NULL;
     return *stackNode;
 }
 
@@ -20,7 +20,7 @@ int isAFull(struct Astack *astack)
     return astack->top == astack->capacity - 1;
 }
 
-void apush(struct Astack *astack, struct Ostack *objects, struct Ostack *vec_elems,  int call_oid ,struct data_mem *local_mem,int num_objs, int ret_addr)
+void apush(struct Astack *astack, struct Ostack *objects, int call_oid ,struct data_mem *local_mem,int num_objs, int ret_addr)
 {
     struct Astack_node stackNode = newANode();
     stackNode.objects = objects;
@@ -28,7 +28,7 @@ void apush(struct Astack *astack, struct Ostack *objects, struct Ostack *vec_ele
     stackNode.num_objs = num_objs;
     stackNode.ret_addr = ret_addr;
     stackNode.local_mem = local_mem;
-    stackNode.vec_elems = vec_elems;
+    //stackNode.vec_elems = vec_elems;
 
     if (isAFull(astack)) {
         fprintf(stderr, "FATAL ERROR: Activation Stack Overflow\n");

@@ -544,7 +544,7 @@ void executeSCode(char *filename)
             v2 = code_mem[i].args[1];
 
             struct Ostack *param_stack = createOStack(100);
-            struct Ostack *vec_stack = createOStack(2048);
+            //struct Ostack *vec_stack = createOStack(2048);
 
             struct Ostack_node param;
 
@@ -556,14 +556,14 @@ void executeSCode(char *filename)
                 {
                     for (int k = param.val.vec_p; k < param.val.vec_p + param.size; k++)
                     {
-                        opush_t(vec_stack, current_instack->stack[k].val, 1, current_instack->stack[k].tipo);
+                        opush_t(current_instack, current_instack->stack[k].val, 1, current_instack->stack[k].tipo);
                     }
-                    param.val.vec_p = vec_stack->top - param.size + 1;
+                    param.val.vec_p = current_instack->top - param.size + 1;
                 }
                 opush_t(param_stack, param.val, param.size, param.tipo);
             }
 
-            apush(aroot, param_stack, vec_stack, call_oid, (struct data_mem *)malloc(sizeof(struct data_mem) * 200), v2.ival, i + 1);
+            apush(aroot, param_stack, call_oid, (struct data_mem *)malloc(sizeof(struct data_mem) * 200), v2.ival, i + 1);
             break;
 
         case GOT:
@@ -725,7 +725,7 @@ void executeSCode(char *filename)
 
             current_mem = func_mem;
             current_stack = record.objects;
-            current_instack = record.vec_elems;
+            //current_instack = record.vec_elems;
 
             env = 1;
             break;
@@ -766,23 +766,23 @@ void executeSCode(char *filename)
 
                 current_mem = apeek(aroot).local_mem;
                 next_stack = apeek(aroot).objects;
-                struct Ostack *next_vecstack = apeek(aroot).vec_elems;
+                //struct Ostack *next_vecstack = apeek(aroot).vec_elems;
 
                 if (code_mem[i].args[0].ival)
                 {
                     struct Ostack_node ret = opop(current_stack);
-                    if (ret.size > 1)
+                    /*if (ret.size > 1)
                     {
                         for (int k = ret.val.vec_p; k < ret.val.vec_p + ret.size; k++)
                         {
                             opush_t(next_vecstack, current_instack->stack[k].val, 1, current_instack->stack[k].tipo);
                         }
                         ret.val.vec_p = next_vecstack->top - ret.size + 1;
-                    }
+                    }*/
                     opush_t(next_stack, ret.val, ret.size, ret.tipo);
                 }
                 current_stack = next_stack;
-                current_instack = next_vecstack;
+                //current_instack = next_vecstack;
             }
             i = ret_i;
             break;

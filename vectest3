@@ -21,11 +21,6 @@ body
             end;
         end;
     end;
-
-
-    #Togliendo # dai 2 seguenti commenti genera errore
-    # write(matrice);
-    #read(matrice);
 end;
 
 body

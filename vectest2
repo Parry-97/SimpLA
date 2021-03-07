@@ -12,10 +12,12 @@ body
     for k = 0 to 4 do
         retvec[k] = param[k] + 1;
     end;
-
+    
+    # Modifichiamo il parametro formale
     for k = 0 to 4 do
-        writeln("retvec[",k,"]: ", retvec[k]);
+        param[k] = 11;
     end;
+    
 
     return retvec;
 end;
@@ -24,6 +26,13 @@ body
     z = vector(1,2,3,4,5);
     x = vector(vector(1,2,3,4,5),copyvet(z));
 
+
+    #la variabile z non cambia 
+    for k = 0 to 4 do
+        writeln("z[",k,"]: ", z[k]);
+    end;
+
+    # la matrice x risultato della concatenazione tra z e copyvet(z)
     for i = 0 to 1 do
         for j  = 0 to 4 do
             writeln("elemento x[",i,"][",j,"] è ", x[i][j]);
