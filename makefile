@@ -1,17 +1,21 @@
 all: simplac simplavm
 .PHONY: all
 
-simplac: lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o
-	cc -g -o simplac lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o
+simplac: simplac.o lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o
+	cc -g -o simplac simplac.o lexer.o parser.o tree.o symbtab.o sema.o gencode.o printcode.o svm.o
 
-simplavm: lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o
-	cc -g -o simplavm lexer.o symbtab.o sema.o gencode.o printcode.o astack.o ostack.o smachine.o svm.o
+simplavm: astack.o gencode.o lexer.o ostack.o parser.o printcode.o sema.o smachine.o svm.o symbtab.o tree.o
+	cc -g -o simplavm astack.o gencode.o lexer.o ostack.o parser.o printcode.o sema.o smachine.o svm.o symbtab.o tree.o
+
 
 lexer.o: lexer.c parser.h def.h
 	cc -g -c lexer.c 
 
 parser.o: parser.c def.h
 	cc -g -c parser.c
+
+simplac.o: simplac.c def.h
+	cc -g -c simplac.c
 
 tree.o: tree.c def.h
 	cc -g -c tree.c
