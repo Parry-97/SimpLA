@@ -1,3 +1,6 @@
+#ifndef DEF_H
+#define DEF_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -6,9 +9,22 @@
 #define MAXARGS 3
 #define SYMTAB_SIZE 2999
 
-struct bucket *symbol_table;
-struct SCode *tot_prog;
-struct SCode *current_prog;
+#define YYSTYPE Pnode
+
+extern int yyparse(void);
+extern struct bucket *symbol_table;
+extern struct SCode *tot_prog;
+extern struct SCode *current_prog;
+
+extern struct bucket *temp_env;
+extern struct bucket **temp_descr;
+extern struct bucket *current_env;
+extern char *id_func;
+extern int *current_oid;
+extern int oid_g;
+extern struct SCode *sub_prog10 ;
+extern char *lista_id[SYMTAB_SIZE];
+extern FILE *yyin;
 
 typedef enum
 {
@@ -232,6 +248,9 @@ typedef struct snode
 
 typedef Node *Pnode;
 
+
+extern Pnode root;
+
 struct Ostack_node
 {
     int size;
@@ -365,3 +384,5 @@ struct Stat *get_scode_from_txt(char *filename);
 
 void save_to_txt(struct SCode *prog, char *filename),
      get_args_from_str(struct Stat *pStat, char *str_args);
+
+#endif
